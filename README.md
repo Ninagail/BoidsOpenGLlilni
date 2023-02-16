@@ -1,7 +1,6 @@
 # TPs Template
 
-This template contains all the things you need to get started with a clean and modern C++ and OpenGL project.<br/>
-It is used for the TPs of [this OpenGL class](https://julesfouchy.github.io/Learn--OpenGL/).
+This template will help you follow the lessons from [this OpenGL class](https://julesfouchy.github.io/Learn--OpenGL/).
 
 **It works on all platforms (Windows, Linux, MacOS).**
 
