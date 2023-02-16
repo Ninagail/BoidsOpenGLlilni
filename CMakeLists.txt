@@ -2,44 +2,45 @@
 cmake_minimum_required(VERSION 3.20)
 
 # ---Choose project name---
-project(Simple-p6-Setup)
-
-# ---Declare source files---
-file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*)
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-target_include_directories(${PROJECT_NAME} PRIVATE src)
-
-# ---Choose C++ version---
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
-
-# ---Choose warning level---
-if(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
-else()
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -pedantic-errors)
-endif()
-
-# ---Maybe enable warnings as errors---
-set(WARNINGS_AS_ERRORS OFF CACHE BOOL "ON iff you want to treat warnings as errors")
-
-if(WARNINGS_AS_ERRORS)
-    if(MSVC)
-        target_compile_options(${PROJECT_NAME} PRIVATE /WX)
-    else()
-        target_compile_options(${PROJECT_NAME} PRIVATE -Werror)
-    endif()
-endif()
-
-# ---Setup Testing---
-include(FetchContent)
-FetchContent_Declare(
-    doctest
-    GIT_REPOSITORY https://github.com/doctest/doctest
-    GIT_TAG b7c21ec5ceeadb4951b00396fc1e4642dd347e5f
-)
-FetchContent_MakeAvailable(doctest)
-target_link_libraries(${PROJECT_NAME} PRIVATE doctest::doctest)
+project(OpenGL-TPs-Template)
 
 # ---Add p6 library---
 add_subdirectory(lib/p6)
-target_link_libraries(${PROJECT_NAME} PRIVATE p6::p6)
+
+# ---Create a target for each TP---
+function(setup_tp TP_NUMBER)
+    set(TARGET_NAME ${TP_NUMBER}_exe)
+    add_executable(${TARGET_NAME})
+
+    # ---Choose C++ version---
+    target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
+
+    # ---Choose warning level---
+    if(MSVC)
+        target_compile_options(${TARGET_NAME} PRIVATE /W4)
+    else()
+        target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic -pedantic-errors)
+    endif()
+
+    # ---Declare source files---
+    file(GLOB_RECURSE TP_FILES CONFIGURE_DEPENDS ${TP_NUMBER}/*)
+    file(GLOB_RECURSE COMMON_FILES CONFIGURE_DEPENDS src-common/*)
+    target_sources(${TARGET_NAME} PRIVATE ${TP_FILES} ${COMMON_FILES})
+    target_include_directories(${TARGET_NAME} PRIVATE ${TP_FILES} src-common)
+
+    # ---Link p6 library---
+    target_link_libraries(${TARGET_NAME} PRIVATE p6::p6)
+
+    # ---Copy the assets and the shaders to the output folder (where the executable is created)---
+    p6_copy_folder(${TARGET_NAME} assets)
+    p6_copy_folder(${TARGET_NAME} ${TP_NUMBER}/shaders)
+endfunction(setup_tp)
+
+setup_tp(TP1)
+setup_tp(TP2)
+setup_tp(TP3)
+setup_tp(TP4)
+setup_tp(TP5)
+setup_tp(TP6)
+setup_tp(TP7)
+setup_tp(TP8)
