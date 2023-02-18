@@ -11,7 +11,6 @@ This template will help you follow the lessons from [this OpenGL class](https://
   - [Downloading your repository](#downloading-your-repository)
   - [Compiling](#compiling)
 - [Coding](#coding)
-  - [Renaming the project](#renaming-the-project)
   - [Folder structure](#folder-structure)
 - [Switching TP](#switching-tp)
 
@@ -49,12 +48,6 @@ You should see this:
 ![initial-window](https://user-images.githubusercontent.com/45451201/219445041-f6d881eb-7dea-42ad-8360-31a8d9eca66d.png)
 
 ## Coding
-
-### Renaming the project
-
-If you want to rename the project (called "OpenGL-TPs-Template" by default), you need to change it in 2 places:
-- In `CMakeLists.txt`, change the line `project(OpenGL-TPs-Template)`
-- In `src/main.cpp`, change the line `auto ctx = p6::Context{{.title = "OpenGL TPs Template"}};`
 
 ### Folder structure
 
