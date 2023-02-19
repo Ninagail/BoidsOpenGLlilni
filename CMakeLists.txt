@@ -31,13 +31,18 @@ function(add_exercise EXERCISE_NAME)
     # ---Link p6 library---
     target_link_libraries(${TARGET_NAME} PRIVATE p6::p6)
 
+    # ---Set the output folder---
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${EXERCISE_NAME})
+
     # ---Copy the assets and the shaders to the output folder (where the executable is created)---
-    p6_copy_folder(${TARGET_NAME} assets)
-    p6_copy_folder(${TARGET_NAME} ${EXERCISE_NAME}/shaders)
+    Cool__target_copy_folder(${TARGET_NAME} assets)
+    Cool__target_copy_folder(${TARGET_NAME} ${EXERCISE_NAME}/shaders shaders)
 endfunction(add_exercise)
 
 add_exercise(TP1_exo1_triangle_blanc)
 add_exercise(TP1_exo2_triangle_couleurs)
+add_exercise(TP1_exo6_ibo)
 add_exercise(TP2)
 add_exercise(TP3)
 add_exercise(TP4)
