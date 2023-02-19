@@ -2,7 +2,7 @@
 
 int main()
 {
-    auto ctx = p6::Context{{.title = "TP1 EX2"}};
+    auto ctx = p6::Context{{.title = "TP3 EX2"}};
     ctx.maximize_window();
 
     /*********************************
