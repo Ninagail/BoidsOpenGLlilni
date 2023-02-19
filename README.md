@@ -51,7 +51,7 @@ You should see this:
 
 ### Folder structure
 
-All your files for the current TP will go in the folder with the same name (e.g. `TP1`). All the files that you want to reuse in all the TPs will go in `src-common`.
+All your files for the current TP will go in the folder with the same name (e.g. `TP1`). All the files that you want to reuse in all the TPs will go in `src-common`. All of your assets (textures, 3D models, etc.) will go in the `assets` folder.
 
 ## Switching TP
 
