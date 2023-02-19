@@ -37,6 +37,7 @@ function(add_exercise EXERCISE_NAME)
 endfunction(add_exercise)
 
 add_exercise(TP1_exo1_triangle_blanc)
+add_exercise(TP1_exo2_triangle_couleurs)
 add_exercise(TP2)
 add_exercise(TP3)
 add_exercise(TP4)
