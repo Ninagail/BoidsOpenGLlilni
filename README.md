@@ -12,7 +12,8 @@ This template will help you follow the lessons from [this OpenGL class](https://
   - [Compiling](#compiling)
 - [Coding](#coding)
   - [Folder structure](#folder-structure)
-- [Switching TP](#switching-tp)
+- [Switching exercise](#switching-exercise)
+- [Adding an exercise folder](#adding-an-exercise-folder)
 
 ## Setting up
 
@@ -51,9 +52,21 @@ You should see this:
 
 ### Folder structure
 
-All your files for the current TP will go in the folder with the same name (e.g. `TP1`). All the files that you want to reuse in all the TPs will go in `src-common`. All of your assets (textures, 3D models, etc.) will go in the `assets` folder.
+All your files for the current exercise will go in the folder with the same name (e.g. `TP1_exo1_triangle_blanc`). All the files that you want to reuse in all the exercises will go in `src-common`. All of your assets (textures, 3D models, etc.) will go in the `assets` folder.
 
-## Switching TP
+## Switching exercise
 
-To switch between the different TPs, simply change the current CMake target:
+To switch between the different exercises, simply change the current CMake target:
 ![Change CMake Target](https://user-images.githubusercontent.com/45451201/219449536-0ade5391-0f64-404d-958d-067667594686.png)
+
+## Adding an exercise folder
+
+If you want to add a new folder to code in it, simply copy-paste one of the existing exercise folder, rename it however you want, and add it to the `CMakeLists.txt`:
+```cmake
+add_exercise(TP1_exo1_triangle_blanc)
+add_exercise(TP1_exo2)
+add_exercise(TP2_exo1)
+add_exercise(TP2_exo2)
+add_exercise(TP2_exo3)
+# ...
+```
