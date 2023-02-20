@@ -1,6 +1,8 @@
 #include "default_shader.hpp"
 #include "glad/gl.h"
 
+namespace glimac {
+
 static unsigned int create_default_shader()
 {
     const char* const vertexShaderSource = R"STR(
@@ -44,3 +46,5 @@ void bind_default_shader()
     static unsigned int default_shader = create_default_shader();
     glUseProgram(default_shader);
 }
+
+} // namespace glimac
