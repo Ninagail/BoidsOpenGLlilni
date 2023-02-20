@@ -1,4 +1,4 @@
-#include "Sphere.hpp"
+#include "sphere_vertices.hpp"
 #include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
