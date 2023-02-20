@@ -1,20 +1,20 @@
-#include "glimac/Sphere.hpp"
+#include "Sphere.hpp"
 #include <cmath>
-#include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 #include <vector>
-#include "glimac/common.hpp"
+#include "glad/gl.h"
 
 namespace glimac {
 
-Sphere::Sphere(GLfloat radius, GLsizei discLat, GLsizei discLong)
-    : m_nVertexCount{discLat * discLong * 6}
+Sphere::Sphere(float radius, GLsizei discLat, GLsizei discLong)
 {
-    // Equation paramétrique en (r, phi, theta) de la sphère
+    // Équation paramétrique en (r, phi, theta) de la sphère
     // avec r >= 0, -PI / 2 <= theta <= PI / 2, 0 <= phi <= 2PI
     //
-    // x(r, phi, theta) = r sin(phi) cos(theta)
-    // y(r, phi, theta) = r sin(theta)
-    // z(r, phi, theta) = r cos(phi) cos(theta)
+    // x(r, phi, theta) = r * sin(phi) * cos(theta)
+    // y(r, phi, theta) = r * sin(theta) *
+    // z(r, phi, theta) = r * cos(phi) * cos(theta)
     //
     // Discrétisation:
     // dPhi = 2PI / discLat, dTheta = PI / discLong
@@ -23,8 +23,10 @@ Sphere::Sphere(GLfloat radius, GLsizei discLat, GLsizei discLong)
     // y(r, i, j) = r * sin(-PI / 2 + j * dTheta)
     // z(r, i, j) = r * cos(i * dPhi) * cos(-PI / 2 + j * dTheta)
 
-    GLfloat rcpLat = 1.f / discLat, rcpLong = 1.f / discLong;
-    GLfloat dPhi = 2 * glm::pi<float>() * rcpLat, dTheta = glm::pi<float>() * rcpLong;
+    const float rcpLat  = 1.f / discLat;
+    const float rcpLong = 1.f / discLong;
+    const float dPhi    = 2.f * glm::pi<float>() * rcpLat;
+    const float dTheta  = glm::pi<float>() * rcpLong;
 
     std::vector<ShapeVertex> data;
 
@@ -45,7 +47,7 @@ Sphere::Sphere(GLfloat radius, GLsizei discLat, GLsizei discLong)
             vertex.normal.y = sinTheta;
             vertex.normal.z = cos(i * dPhi) * cosTheta;
 
-            vertex.position = r * vertex.normal;
+            vertex.position = radius * vertex.normal;
 
             data.push_back(vertex);
         }

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "common.hpp"
+#include "glad/gl.h"
 
 namespace glimac {
 
@@ -9,18 +10,17 @@ namespace glimac {
 // Son axe vertical est (0, 1, 0) et ses axes transversaux sont (1, 0, 0) et (0, 0, 1)
 class Sphere {
 public:
-    // Constructeur: alloue le tableau de données et construit les attributs des vertex
-    Sphere(GLfloat radius, GLsizei discLat, GLsizei discLong);
+    // Constructeur : alloue le tableau de données et construit les attributs des vertex
+    Sphere(float radius, GLsizei discretisation_latitude, GLsizei discretisation_longitude);
 
     // Renvoie le pointeur vers les données
     const ShapeVertex* getDataPointer() const { return m_Vertices.data(); }
 
     // Renvoie le nombre de vertex
-    GLsizei getVertexCount() const { return m_nVertexCount; }
+    GLsizei getVertexCount() const { return static_cast<GLsizei>(m_Vertices.size()); }
 
 private:
     std::vector<ShapeVertex> m_Vertices;
-    GLsizei                  m_nVertexCount; // Nombre de sommets
 };
 
 } // namespace glimac
