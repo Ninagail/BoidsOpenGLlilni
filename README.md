@@ -23,7 +23,7 @@ First, create your own repository based on this one. If you are using GitHub you
 
 ![image](https://user-images.githubusercontent.com/45451201/217287736-20058d69-f0ed-40ff-b4e5-cfd852e2ba82.png)
 
-Otherwise simply create a repository on your own and copy-paste all the files in this repo to your new repo, and add p6 as a submodule manually.
+Otherwise simply create a repository on your own and copy-paste all the files in this repo to your new repo.
 
 ### Downloading your repository
 
@@ -61,7 +61,7 @@ To switch between the different exercises, simply change the current CMake targe
 
 ## Adding an exercise folder
 
-If you want to add a new folder to code in it, simply copy-paste one of the existing exercise folder, rename it however you want, and add it to the `CMakeLists.txt`:
+If you want to add a new folder to code in it, simply copy-paste one of the existing exercise folders, rename it however you want, and add it at the bottom of the `CMakeLists.txt`:
 ```cmake
 add_exercise(TP1_exo1_triangle_blanc)
 add_exercise(TP1_exo2)
