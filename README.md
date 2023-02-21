@@ -46,7 +46,7 @@ Once that is done, open the project folder in your IDE: it will detect the CMake
 
 You should see this:
 
-![initial-window](https://user-images.githubusercontent.com/45451201/219445041-f6d881eb-7dea-42ad-8360-31a8d9eca66d.png)
+![initial-window](https://user-images.githubusercontent.com/45451201/220456307-94cfa377-b153-4af5-8dfa-e08b075e02b9.png)
 
 ## Coding
 
