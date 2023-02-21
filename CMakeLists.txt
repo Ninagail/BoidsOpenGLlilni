@@ -5,7 +5,13 @@ cmake_minimum_required(VERSION 3.20)
 project(OpenGL-TPs-Template)
 
 # ---Add p6 library---
-add_subdirectory(lib/p6)
+include(FetchContent)
+FetchContent_Declare(
+    p6
+    GIT_REPOSITORY https://github.com/julesfouchy/p6
+    GIT_TAG 6975344e1319087e62332145f6ff36208efb3ff1
+)
+FetchContent_MakeAvailable(p6)
 
 # ---Create a target for each exercise---
 function(add_exercise EXERCISE_NAME)
