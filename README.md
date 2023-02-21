@@ -57,7 +57,7 @@ To switch between the different exercises, simply change the current CMake targe
 
 ### Adding an exercise folder
 
-If you want to add a new folder to code in it, simply copy-paste one of the existing exercise folders, rename it however you want, and add it at the bottom of the `CMakeLists.txt`:
+If you want to add a new folder to code in it, simply copy-paste one of the existing exercise folders, rename it however you want, and add it to the bottom of the `CMakeLists.txt`:
 ```cmake
 add_exercise(TP1_exo1_triangle_blanc)
 add_exercise(TP1_exo2)
