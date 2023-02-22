@@ -3,11 +3,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <vector>
-#include "glad/gl.h"
 
 namespace glimac {
 
-std::vector<ShapeVertex> sphere_vertices(float radius, GLsizei discLat, GLsizei discLong)
+std::vector<ShapeVertex> sphere_vertices(float radius, size_t discLat, size_t discLong) // NOLINT(bugprone-easily-swappable-parameters, readability-inconsistent-declaration-parameter-name)
 {
     // Équation paramétrique en (r, phi, theta) de la sphère
     // avec r >= 0, -PI / 2 <= theta <= PI / 2, 0 <= phi <= 2PI
@@ -17,38 +16,42 @@ std::vector<ShapeVertex> sphere_vertices(float radius, GLsizei discLat, GLsizei 
     // z(r, phi, theta) = r * cos(phi) * cos(theta)
     //
     // Discrétisation:
-    // dPhi = 2PI / discLat, dTheta = PI / discLong
+    // phi = 2PI / discLat, theta = PI / discLong
     //
-    // x(r, i, j) = r * sin(i * dPhi) * cos(-PI / 2 + j * dTheta)
-    // y(r, i, j) = r * sin(-PI / 2 + j * dTheta)
-    // z(r, i, j) = r * cos(i * dPhi) * cos(-PI / 2 + j * dTheta)
+    // x(r, i, j) = r * sin(i * phi) * cos(-PI / 2 + j * theta)
+    // y(r, i, j) = r * sin(-PI / 2 + j * theta)
+    // z(r, i, j) = r * cos(i * phi) * cos(-PI / 2 + j * theta)
     //
     // Attention ! dans cette implantation on duplique beaucoup de sommets. Une meilleur stratégie est de passer
     // par un Index Buffer Object, que nous verrons dans les prochains TDs
 
-    const float rcpLat  = 1.f / discLat;
-    const float rcpLong = 1.f / discLong;
-    const float dPhi    = 2.f * glm::pi<float>() * rcpLat;
-    const float dTheta  = glm::pi<float>() * rcpLong;
+    const auto fDiscLat  = static_cast<float>(discLat);
+    const auto fDiscLong = static_cast<float>(discLong);
+
+    const float phi   = 2.f * glm::pi<float>() / fDiscLat;
+    const float theta = glm::pi<float>() / fDiscLong;
 
     std::vector<ShapeVertex> data;
 
     // Construit l'ensemble des vertex
-    for (GLsizei j = 0; j <= discLong; ++j)
+    for (size_t j = 0; j <= discLong; ++j)
     {
-        const GLfloat cosTheta = cos(-glm::pi<float>() / 2 + j * dTheta);
-        const GLfloat sinTheta = sin(-glm::pi<float>() / 2 + j * dTheta);
+        const auto fj = static_cast<float>(j);
 
-        for (GLsizei i = 0; i <= discLat; ++i)
+        const float cosTheta = std::cos(-glm::pi<float>() / 2.f + fj * theta);
+        const float sinTheta = std::sin(-glm::pi<float>() / 2.f + fj * theta);
+
+        for (size_t i = 0; i <= discLat; ++i)
         {
+            const auto  fi = static_cast<float>(i);
             ShapeVertex vertex{};
 
-            vertex.texCoords.x = i * rcpLat;
-            vertex.texCoords.y = 1.f - j * rcpLong;
+            vertex.texCoords.x = fi / fDiscLat;
+            vertex.texCoords.y = 1.f - fj / fDiscLong;
 
-            vertex.normal.x = sin(i * dPhi) * cosTheta;
+            vertex.normal.x = std::sin(fi * phi) * cosTheta;
             vertex.normal.y = sinTheta;
-            vertex.normal.z = cos(i * dPhi) * cosTheta;
+            vertex.normal.z = std::cos(fi * phi) * cosTheta;
 
             vertex.position = radius * vertex.normal;
 
@@ -57,14 +60,14 @@ std::vector<ShapeVertex> sphere_vertices(float radius, GLsizei discLat, GLsizei 
     }
 
     std::vector<ShapeVertex> vertices{};
-    // Construit les vertex finaux en regroupant les données en triangles:
-    // Pour une longitude donnée, les deux triangles formant une face sont de la forme:
+    // Construit les vertex finaux en regroupant les données en triangles :
+    // Pour une longitude donnée, les deux triangles formant une face sont de la forme :
     // (i, i + 1, i + discLat + 1), (i, i + discLat + 1, i + discLat)
     // avec i sur la bande correspondant à la longitude
-    for (GLsizei j = 0; j < discLong; ++j)
+    for (size_t j = 0; j < discLong; ++j)
     {
-        const GLsizei offset = j * (discLat + 1);
-        for (GLsizei i = 0; i < discLat; ++i)
+        const size_t offset = j * (discLat + 1);
+        for (size_t i = 0; i < discLat; ++i)
         {
             vertices.push_back(data[offset + i]);
             vertices.push_back(data[offset + (i + 1)]);

@@ -1,15 +1,14 @@
 #include "cone_vertices.hpp"
 #include <cmath>
 #include <glm/gtc/constants.hpp>
-#include <iostream>
 #include <vector>
 #include "common.hpp"
 
 namespace glimac {
 
-std::vector<ShapeVertex> cone_vertices(float height, float radius, GLsizei discLat, GLsizei discHeight)
+std::vector<ShapeVertex> cone_vertices(float height, float radius, size_t discLat, size_t discHeight) // NOLINT(bugprone-easily-swappable-parameters, readability-inconsistent-declaration-parameter-name)
 {
-    // Equation paramétrique en (r, phi, h) du cone
+    // Equation paramétrique en (r, phi, h) du cône
     // avec r >= 0, -PI / 2 <= theta <= PI / 2, 0 <= h <= height
     //
     // x(r, phi, h) = r (height - h) sin(phi) / height
@@ -17,46 +16,43 @@ std::vector<ShapeVertex> cone_vertices(float height, float radius, GLsizei discL
     // z(r, phi, h) = r (height - h) cos(phi) / height
     //
     // Discrétisation:
-    // dPhi = 2PI / discLat, dH = height / discHeight
+    // phi = 2PI / discLat, h = height / discHeight
     //
-    // x(r, i, j) = r * (height - j * dH) * sin(i * dPhi) / height
-    // y(r, i, j) = j * dH
-    // z(r, i, j) = r * (height - j * dH) * cos(i * dPhi) / height
+    // x(r, i, j) = r * (height - j * h) * sin(i * phi) / height
+    // y(r, i, j) = j * h
+    // z(r, i, j) = r * (height - j * h) * cos(i * phi) / height
     //
     // Attention ! dans cette implantation on duplique beaucoup de sommets. Une meilleur stratégie est de passer
     // par un Index Buffer Object, que nous verrons dans les prochains TDs
 
-    const GLfloat rcpLat = 1.f / discLat;
-    const GLfloat rcpH   = 1.f / discHeight;
-    const GLfloat dPhi   = 2 * glm::pi<float>() * rcpLat;
-    const GLfloat dH     = height * rcpH;
+    const auto fDiscLat    = static_cast<float>(discLat);
+    const auto fDiscHeight = static_cast<float>(discHeight);
+
+    const float phi = 2.f * glm::pi<float>() / fDiscLat;
+    const float h   = height / fDiscHeight;
 
     std::vector<ShapeVertex> data;
 
     // Construit l'ensemble des vertex
-    for (GLsizei j = 0; j <= discHeight; ++j)
+    for (size_t j = 0; j <= discHeight; ++j)
     {
-        for (GLsizei i = 0; i < discLat; ++i)
+        for (size_t i = 0; i < discLat; ++i)
         {
-            ShapeVertex vertex;
+            const auto fj = static_cast<float>(j);
+            const auto fi = static_cast<float>(i);
 
-            vertex.texCoords.x = i * rcpLat;
-            vertex.texCoords.y = j * rcpH;
+            ShapeVertex vertex{};
 
-            vertex.position.x = radius * (height - j * dH) * sin(i * dPhi) / height;
-            vertex.position.y = j * dH;
-            vertex.position.z = radius * (height - j * dH) * cos(i * dPhi) / height;
+            vertex.texCoords.x = fi / fDiscLat;
+            vertex.texCoords.y = fj / fDiscHeight;
 
-            /* avec cette formule la normale est mal définie au sommet (= (0, 0, 0))
-            vertex.normal.x = vertex.position.x;
-            vertex.normal.y = r * r * (1 - vertex.position.y / height) / height;
-            vertex.normal.z = vertex.position.z;
-            vertex.normal = glm::normalize(vertex.normal);
-            */
+            vertex.position.x = radius * (height - fj * h) * std::sin(fi * phi) / height;
+            vertex.position.y = fj * h;
+            vertex.position.z = radius * (height - fj * h) * std::cos(fi * phi) / height;
 
-            vertex.normal.x = sin(i * dPhi);
+            vertex.normal.x = std::sin(fi * phi);
             vertex.normal.y = radius / height;
-            vertex.normal.z = cos(i * dPhi);
+            vertex.normal.z = std::cos(fi * phi);
             vertex.normal   = glm::normalize(vertex.normal);
 
             data.push_back(vertex);
@@ -64,14 +60,14 @@ std::vector<ShapeVertex> cone_vertices(float height, float radius, GLsizei discL
     }
 
     std::vector<ShapeVertex> vertices{};
-    // Construit les vertex finaux en regroupant les données en triangles:
-    // Pour une longitude donnée, les deux triangles formant une face sont de la forme:
+    // Construit les vertex finaux en regroupant les données en triangles :
+    // Pour une longitude donnée, les deux triangles formant une face sont de la forme :
     // (i, i + 1, i + discLat + 1), (i, i + discLat + 1, i + discLat)
     // avec i sur la bande correspondant à la longitude
-    for (GLsizei j = 0; j < discHeight; ++j)
+    for (size_t j = 0; j < discHeight; ++j)
     {
-        const GLsizei offset = j * discLat;
-        for (GLsizei i = 0; i < discLat; ++i)
+        const size_t offset = j * discLat;
+        for (size_t i = 0; i < discLat; ++i)
         {
             vertices.push_back(data[offset + i]);
             vertices.push_back(data[offset + (i + 1) % discLat]);
