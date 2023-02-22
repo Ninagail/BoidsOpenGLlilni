@@ -9,7 +9,7 @@ include(FetchContent)
 FetchContent_Declare(
     p6
     GIT_REPOSITORY https://github.com/julesfouchy/p6
-    GIT_TAG 6975344e1319087e62332145f6ff36208efb3ff1
+    GIT_TAG 17695962b048ce20e953a5a38aecb925da77ec44
 )
 FetchContent_MakeAvailable(p6)
 
@@ -19,7 +19,7 @@ function(add_exercise EXERCISE_NAME)
     add_executable(${TARGET_NAME})
 
     # ---Choose C++ version---
-    target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
+    target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)
 
     # ---Choose warning level---
     if(MSVC)
