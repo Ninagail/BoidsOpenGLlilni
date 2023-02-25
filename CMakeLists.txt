@@ -9,7 +9,7 @@ include(FetchContent)
 FetchContent_Declare(
     p6
     GIT_REPOSITORY https://github.com/julesfouchy/p6
-    GIT_TAG 5ea8da5a4c9e4904319843424766166744fcf460
+    GIT_TAG 0c2fd530e1398db8c0c2406cd32fcd40a326ac57
 )
 FetchContent_MakeAvailable(p6)
 
