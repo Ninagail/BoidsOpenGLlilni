@@ -50,10 +50,10 @@ std::vector<ShapeVertex> sphere_vertices(float radius, size_t discLat, size_t di
             vertex.texCoords.y = 1.f - fj / fDiscLong;
 
             vertex.normal.x = std::sin(fi * phi) * cosTheta;
-            vertex.normal.y = sinTheta;
             vertex.normal.z = std::cos(fi * phi) * cosTheta;
+            vertex.normal.y = sinTheta;
 
-            vertex.position = radius * vertex.normal;
+            vertex.position = radius * vertex.normal + glm::vec3{0.f, 0.f, -5.f};
 
             data.push_back(vertex);
         }
