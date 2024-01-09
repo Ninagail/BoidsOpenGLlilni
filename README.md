@@ -56,6 +56,9 @@ All your files for the current exercise will go in the folder with the same name
 
 To switch between the different exercises, simply change the current CMake target:
 ![Change CMake Target](https://user-images.githubusercontent.com/45451201/219449536-0ade5391-0f64-404d-958d-067667594686.png)
+**NB:** If you don't see this, you need to enable it in your Settings (<kbd>CTRL</kbd>+<kbd>,</kbd>): Set "Cmake Status Bar Visibility" to *Compact* or *Visible*:
+![image](https://github.com/JulesFouchy/Learn--OpenGL--TPs-Template/assets/45451201/b6f7a73d-3ccb-454b-ba6d-c5b82869dc83)
+
 
 ### Adding an exercise folder
 
