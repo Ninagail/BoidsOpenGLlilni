@@ -10,7 +10,7 @@ set(P6_RAW_OPENGL_MODE ON CACHE BOOL "")
 FetchContent_Declare(
     p6
     GIT_REPOSITORY https://github.com/julesfouchy/p6
-    GIT_TAG 350bf29ec49f43c8600c7e0dbc6099091367c752
+    GIT_TAG c14c6fc641aac670becb79a80f2a56b047376064
 )
 FetchContent_MakeAvailable(p6)
 
