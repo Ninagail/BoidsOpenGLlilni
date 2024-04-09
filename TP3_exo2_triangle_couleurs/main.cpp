@@ -4,6 +4,7 @@ int main()
 {
     auto ctx = p6::Context{{1280, 720, "TP3 EX2"}};
     ctx.maximize_window();
+    float essai = 0.0f;
 
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
