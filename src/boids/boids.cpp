@@ -3,6 +3,12 @@
 #include "p6/p6.h"
 
 static constexpr glm::vec3 speedMax = glm::vec3(0.02f, 0.02f, 0.02f);
+// initialisation stattic
+float Boids::distance_alignment  = 0.1f;
+float Boids::distance_separation = 0.05f;
+float Boids::distance_cohesion   = 0.2f;
+float Boids::separation_force    = 0.01f;
+float Boids::cohesion_force      = 0.2f;
 
 void Boids::drawBoids(p6::Context& ctx) const
 {
@@ -11,6 +17,9 @@ void Boids::drawBoids(p6::Context& ctx) const
     ctx.use_stroke = false;
 }
 
+void Boids::drawBoids3D(p6::Context& ctx) const
+{
+}
 
 void Boids::update_pos()
 {

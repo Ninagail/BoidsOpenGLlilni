@@ -1,9 +1,11 @@
 #include <glm/gtc/matrix_transform.hpp>
+#include "../src/boids/boids.hpp"
 #include "glimac/common.hpp"
 #include "glimac/sphere_vertices.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "p6/p6.h"
 #include "tools.cpp"
+
 
 int main()
 {
@@ -18,6 +20,8 @@ int main()
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
+    
+
     std::vector<glimac::ShapeVertex> vertices = glimac::sphere_vertices(1, 32, 16);
 
     VBO vbo;

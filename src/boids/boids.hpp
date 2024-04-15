@@ -29,6 +29,7 @@ public:
     // Méthodes
 
     void drawBoids(p6::Context& ctx) const;
+    void drawBoids3D(p6::Context& ctx) const;
 
     void update_pos();
     void update_direction(std::vector<Boids>& boids);
