@@ -1,5 +1,6 @@
 #include <vector>
 #include "../src-common/glimac/sphere_vertices.hpp"
+#include "../src/scene/loadShader.hpp"
 #include "glimac/common.hpp"
 #include "glm/vec2.hpp"
 #include "p6/p6.h"
@@ -32,7 +33,7 @@ public:
     // Méthodes
 
     void drawBoids(p6::Context& ctx) const;
-    void drawBoids3D(const std::vector<glimac::ShapeVertex>& vertices, GLuint textureLadybug, const std::vector<Boids>& boids, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, GLint uMVPMatrix, GLint uMVMatrix, GLint uNormalMatrix, GLint uTextLadybug);
+    void drawBoids3D(const std::vector<glimac::ShapeVertex>& vertices, const std::vector<Boids>& boids, glm::mat4 ProjMatrix, glm::mat4 NormalMatrix, glm::mat4 viewMatrix, LoadShader& shader, GLuint textName);
 
     void update_pos();
     void update_direction(std::vector<Boids>& boids);

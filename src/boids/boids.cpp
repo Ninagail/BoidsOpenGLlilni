@@ -18,7 +18,7 @@ void Boids::drawBoids(p6::Context& ctx) const
     ctx.use_stroke = false;
 }
 
-void Boids::drawBoids3D(const std::vector<glimac::ShapeVertex>& vertices, GLuint textureLadybug, const std::vector<Boids>& boids, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, GLint uMVPMatrix, GLint uMVMatrix, GLint uNormalMatrix, GLint uTextLadybug)
+void Boids::drawBoids3D(const std::vector<glimac::ShapeVertex>& vertices, const std::vector<Boids>& boids, glm::mat4 ProjMatrix, glm::mat4 NormalMatrix, glm::mat4 viewMatrix, LoadShader& shader, GLuint textName)
 
 {
     // Bind texture Ladybug
@@ -31,19 +31,18 @@ void Boids::drawBoids3D(const std::vector<glimac::ShapeVertex>& vertices, GLuint
     for (const auto& boid : boids)
     {
         // Calculate the model matrix for the boid
-        glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0), boid.get_position());
-        ModelMatrix           = glm::scale(ModelMatrix, glm::vec3(0.1f)); // Scale the boid to appropriate size
+        glm::mat4 MVMatrixBoids = glm::translate(glm::mat4{1.f}, {0.f, 0.f, -3.f});                        // Translation
+        MVMatrixBoids           = glm::rotate(MVMatrixBoids, glm::radians(180.0f), glm::vec3(0., 1., 0.)); // Translation * Rotation
+        MVMatrixBoids           = glm::translate(MVMatrixBoids, this->m_position);                         // Translation * Rotation * Translation
 
-        // Calculate the Model-View-Projection matrix for the boid
-        glm::mat4 MVPMatrixBoid = ProjMatrix * MVMatrix * ModelMatrix;
+        // glm::mat4 MVMatrixBoids = glm::translate(glm::mat4{1.f}, this->m_pos); // Translation
 
-        // Calculate the Normal matrix for the boid
-        glm::mat4 NormalMatrixBoid = glm::transpose(glm::inverse(MVMatrix * ModelMatrix));
+        MVMatrixBoids = glm::scale(MVMatrixBoids, glm::vec3{this->m_size}); // Translation * Rotation * Translation * Scale
+        MVMatrixBoids = viewMatrix * MVMatrixBoids;
 
-        // Apply matrices in the shaders
-        glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(MVPMatrixBoid));
-        glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
-        glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrixBoid));
+        shader.setUniform4fv("uMVPMatrix", ProjMatrix * MVMatrixBoids);
+        shader.setUniform4fv("uMVMatrix", MVMatrixBoids);
+        shader.setUniform4fv("uNormalMatrix", NormalMatrix);
 
         // Fill coordinates in the VBO (Static is for constant variables)
         // glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glimac::ShapeVertex), vertices.data(), GL_STATIC_DRAW);
@@ -60,30 +59,30 @@ void Boids::update_pos()
 {
     m_position += m_speed;
 
-    if (m_position.x <= -0.975f)
+    if (m_position.x <= -1.975f)
     {
-        m_position.x += 1.95f;
+        m_position.x += 2.95f;
     }
-    else if (m_position.x >= 0.975f)
+    else if (m_position.x >= 1.975f)
     {
-        m_position.x -= 1.95f;
+        m_position.x -= 2.95f;
     }
 
-    if (m_position.y <= -0.975f)
+    if (m_position.y <= -1.975f)
     {
-        m_position.y += 1.95f;
+        m_position.y += 2.95f;
     }
-    else if (m_position.y >= 0.975f)
+    else if (m_position.y >= 1.975f)
     {
-        m_position.y -= 1.95f;
+        m_position.y -= 2.95f;
     }
-    if (m_position.z <= -0.975f)
+    if (m_position.z <= -1.975f)
     {
-        m_position.z += 1.95f;
+        m_position.z += 2.95f;
     }
-    else if (m_position.z >= 0.975f)
+    else if (m_position.z >= 1.975f)
     {
-        m_position.z -= 1.95f;
+        m_position.z -= 2.95f;
     }
 }
 
