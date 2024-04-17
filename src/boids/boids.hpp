@@ -1,4 +1,6 @@
 #include <vector>
+#include "../src-common/glimac/sphere_vertices.hpp"
+#include "glimac/common.hpp"
 #include "glm/vec2.hpp"
 #include "p6/p6.h"
 
@@ -7,6 +9,7 @@ private:
     glm::vec3 m_position;
     glm::vec3 m_speed;
     glm::vec3 m_direction;
+    glm::vec3 m_size;
 
 public:
     // attributs
@@ -19,17 +22,17 @@ public:
 
     // constructeurs
     Boids()
-        : m_position(glm::vec3(0.0, 0.0, 0.0)), m_speed(glm::vec3(0.01, 0.01, 0.01)), m_direction(glm::vec3(p6::random::direction(), 0.0f)){};
+        : m_position(glm::vec3(0.0, 0.0, 0.0)), m_speed(glm::vec3(0.01, 0.01, 0.01)), m_direction(glm::vec3(p6::random::direction(), 0.0f)), m_size(0.1){};
 
-    Boids(glm::vec3 position, glm::vec3 speed)
-        : m_position(position), m_speed(speed){};
+    Boids(glm::vec3 position, glm::vec3 speed, glm::vec3 size)
+        : m_position(position), m_speed(speed), m_size(size){};
 
     ~Boids() = default;
 
     // Méthodes
 
     void drawBoids(p6::Context& ctx) const;
-    void drawBoids3D(p6::Context& ctx) const;
+    void drawBoids3D(const std::vector<glimac::ShapeVertex>& vertices, GLuint textureLadybug, const std::vector<Boids>& boids, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, GLint uMVPMatrix, GLint uMVMatrix, GLint uNormalMatrix, GLint uTextLadybug);
 
     void update_pos();
     void update_direction(std::vector<Boids>& boids);
