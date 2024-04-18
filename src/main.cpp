@@ -1,8 +1,9 @@
+#include <glm/glm.hpp>
 #include <iostream>
 #include <vector>
 #include "../src/model/model.hpp"
 #include "../src/scene/camera.hpp"
-#include "../src/scene/lights.hpp"
+// #include "../src/scene/lights.hpp"
 #include "../src/scene/loadShader.hpp"
 #include "../src/tools/vbovao.hpp"
 #include "GLFW/glfw3.h"
@@ -17,6 +18,37 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "img/src/Image.h"
 #include "p6/p6.h"
+
+struct Light {
+    p6::Shader m_Program;
+
+    GLint uMVPMatrix;
+    GLint uMVMatrix;
+    GLint uNormalMatrix;
+    // texture comment
+    //  GLint uTexture;
+
+    GLint uKd;
+    GLint uKs;
+    GLint uShininess;
+    GLint uLightDir_vs;
+    GLint uLightIntensity;
+
+    Light()
+        : m_Program{p6::load_shader("shaders/3D.vs.glsl", "shaders/lights.fs.glsl")}
+    {
+        uMVPMatrix    = glGetUniformLocation(m_Program.id(), "uMVPMatrix");
+        uMVMatrix     = glGetUniformLocation(m_Program.id(), "uMVMatrix");
+        uNormalMatrix = glGetUniformLocation(m_Program.id(), "uNormalMatrix");
+        // texture comment
+        //  uTexture      = glGetUniformLocation(m_Program.id(), "uTexture");
+        uKd             = glGetUniformLocation(m_Program.id(), "uKd");
+        uKs             = glGetUniformLocation(m_Program.id(), "uKs");
+        uShininess      = glGetUniformLocation(m_Program.id(), "uShininess");
+        uLightDir_vs    = glGetUniformLocation(m_Program.id(), "uLightDir_vs");
+        uLightIntensity = glGetUniformLocation(m_Program.id(), "uLightIntensity");
+    }
+};
 
 int main()
 {
@@ -34,9 +66,10 @@ int main()
         boid.set_position();
     }
     // Load shaders
-    LoadShader ShaderText("shaders/3D.vs.glsl", "shaders/text3D.fs.glsl");
+    LoadShader ShaderText("shaders/3D.vs.glsl", "shaders/lights.fs.glsl");
 
-    LoadShader ShaderLight("shaders/3D.vs.glsl", "shaders/lights.fs.glsl");
+    // LoadShader ShaderLight("shaders/3D.vs.glsl", "shaders/lights.fs.glsl");
+    Light light{};
 
     // Load texture
     img::Image img_ladybug = p6::load_image_buffer("assets/models/Ladybug.jpg");
@@ -48,17 +81,17 @@ int main()
     ShaderText.addUniformVariable("uTextLadybug");
 
     // Retrieve uniform variables Light
-    ShaderLight.addUniformVariable("uMVPMatrix");
-    ShaderLight.addUniformVariable("uMVMatrix");
-    ShaderLight.addUniformVariable("uNormalMatrix");
-    ShaderLight.addUniformVariable("uLightPos_vs");
-    ShaderLight.addUniformVariable("uLightIntensity");
-    ShaderLight.addUniformVariable("uLightPos2_vs");
-    ShaderLight.addUniformVariable("uLightIntensity2");
-    ShaderLight.addUniformVariable("uKd");
-    ShaderLight.addUniformVariable("uKs");
-    ShaderLight.addUniformVariable("uShininess");
-    ShaderLight.addUniformVariable("uText");
+    // ShaderLight.addUniformVariable("uMVPMatrix");
+    // ShaderLight.addUniformVariable("uMVMatrix");
+    // ShaderLight.addUniformVariable("uNormalMatrix");
+    // ShaderLight.addUniformVariable("uLightPos_vs");
+    // ShaderLight.addUniformVariable("uLightIntensity");
+    // ShaderLight.addUniformVariable("uLightPos2_vs");
+    // ShaderLight.addUniformVariable("uLightIntensity2");
+    // ShaderLight.addUniformVariable("uKd");
+    // ShaderLight.addUniformVariable("uKs");
+    // ShaderLight.addUniformVariable("uShininess");
+    // ShaderLight.addUniformVariable("uText");
 
     // Initialisation de la texture
     GLuint textureLadybug;
@@ -120,18 +153,12 @@ int main()
     ProjMatrix = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
 
     // camera
-    // creation cam & initialisation des mouvements
-    // TrackballCamera camera(5, 0, 0);
-    Freefly camera;
-    bool    right = false;
-    bool    left  = false;
-    bool    up    = false;
-    bool    down  = false;
+    Camera camera;
 
     // light
 
-    Light light1 = Light(glm::vec3{100000.});
-    Light light2 = Light(glm::vec3{0.001});
+    // Light light1 = Light(glm::vec3{100000.}, glm::vec3{0., 0., 0.});
+    // Light light2 = Light(glm::vec3{0.001}, glm::vec3{0., 0., 0.});
 
     /* Loop until the user closes the window */
     ctx.update = [&]() {
@@ -141,76 +168,24 @@ int main()
 
         // camera
 
-        if (right)
-        {
-            camera.moveLeft(-0.1f);
-        }
-        if (left)
-        {
-            camera.moveLeft(0.1f);
-        }
-        if (up)
-        {
-            camera.moveFront(0.1f);
-        }
-        if (down)
-        {
-            camera.moveFront(-0.1f);
-        }
-
-        ctx.key_pressed = [&right, &up, &left, &down](p6::Key key) {
-            if (key.logical == "d")
-            {
-                right = true;
-            }
-            if (key.logical == "q")
-            {
-                left = true;
-            }
-            if (key.logical == "z")
-            {
-                up = true;
-            }
-            if (key.logical == "s")
-            {
-                down = true;
-            }
+        ctx.key_pressed = [&camera](const p6::Key& key) {
+            camera.handleKeyPressed(key);
         };
-
-        ctx.key_released = [&right, &up, &left, &down](p6::Key key) {
-            if (key.logical == "d")
-            {
-                right = false;
-            }
-            if (key.logical == "q")
-            {
-                left = false;
-            }
-            if (key.logical == "z")
-            {
-                up = false;
-            }
-            if (key.logical == "s")
-            {
-                down = false;
-            }
+        ctx.key_released = [&camera](const p6::Key& key) {
+            camera.handleKeyReleased(key);
         };
-
         ctx.mouse_dragged = [&camera](const p6::MouseDrag& button) {
-            camera.rotateLeft(button.delta.x * 5);
-            camera.rotateUp(-button.delta.y * 5);
+            camera.handleMouseDragged(button);
         };
 
-        ctx.mouse_scrolled = [&](p6::MouseScroll scroll) {
-            // std::cout << "dx : " << scroll.dx << " et dy : " << scroll.dy << std::endl;
-            // dy = -1 recul
-            // dy = 1 avance
-            camera.moveFront(-scroll.dy);
+        ctx.mouse_scrolled = [&camera](const p6::MouseScroll& scroll) {
+            camera.handleMouseScrolled(scroll);
         };
 
         glm::mat4 viewMatrix = camera.getViewMatrix();
 
-        ShaderLight.use();
+        // ShaderLight.use();
+        light.m_Program.use();
         glClearColor(0.2f, 0.2f, 0.2f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -220,12 +195,30 @@ int main()
         // Bind texture Ladybug
         glBindTexture(GL_TEXTURE_2D, textureLadybug);
 
+        const glm::mat4 globalMVMatrix = glm::translate(glm::mat4{1.f}, {0.f, 0.f, -5.f});
+        const glm::mat4 lightMMatrix   = glm::rotate(globalMVMatrix, ctx.time(), {0.f, 1.f, 0.f});
+        const glm::mat4 lightMVMatrix  = viewMatrix * lightMMatrix; // variation de la MV (simuler une cam)
+        const glm::mat4 lightMVPMatrix = ProjMatrix * lightMVMatrix;
+        // lights
+        glUniform3fv(light.uKd, 1, glm::value_ptr(glm::vec3(0.5, 0.3, 0.3))); // coefficient glossy
+        glUniform3fv(light.uKs, 1, glm::value_ptr(glm::vec3(0.8, 0.2, 0.3))); // coef de reflexion
+        glUniform1f(light.uShininess, 0.6f);                                  // brillance
+        glm::vec3 lightdir(1., 1., 1.);
+        lightdir                     = (lightMVMatrix * glm::vec4(lightdir, 0.));
+        const glm::mat4 normalMatrix = glm::transpose(glm::inverse(lightMVMatrix));
+
+        glUniform3fv(light.uLightDir_vs, 1, glm::value_ptr(lightdir));
+        glUniform3fv(light.uLightIntensity, 1, glm::value_ptr(glm::vec3(2.0, 2.0, 2.0)));
+
+        glUniformMatrix4fv(light.uMVMatrix, 1, GL_FALSE, glm::value_ptr(lightMVMatrix));
+        glUniformMatrix4fv(light.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+        glUniformMatrix4fv(light.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(lightMVPMatrix));
+
+        glDrawArrays(GL_TRIANGLES, 0, vertices.size());
         // Ladybug
         // MVMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0., 0., -5.));
         // MVMatrix     = glm::rotate(MVMatrix, glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
         // NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
-
-        // lights
 
         ShaderText.use();
         // Set texture Ladybug
@@ -262,8 +255,8 @@ int main()
 
     ctx.start();
 
-    light1.~Light();
-    light2.~Light();
+    // light1.~Light();
+    // light2.~Light();
 
     glDeleteTextures(1, &textureLadybug);
 
