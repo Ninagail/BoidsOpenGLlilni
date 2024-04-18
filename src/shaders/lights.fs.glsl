@@ -9,7 +9,7 @@ vec2 fCorrectCoords;
 
 out vec4 fFragColor;
 
-uniform sampler2D uText;
+uniform sampler2D uTextLadybug;
 
 uniform vec3 uKd;
 uniform vec3 uKs;
@@ -43,7 +43,7 @@ void main() {
 
     
     // Application de la texture
-    vec4 texture = texture(uText, vTexCoords);
+    vec4 texture = texture(uTextLadybug, vTexCoords);
     
     
     fFragColor = vec4(color, 1.0)*texture;	

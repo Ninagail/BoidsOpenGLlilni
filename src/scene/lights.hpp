@@ -8,7 +8,6 @@
 class Light {
 private:
     glm::vec3 m_intensity;
-    glm::vec3 m_position;
 
 public:
     Light(glm::vec3 intensity)
@@ -22,8 +21,6 @@ public:
 
     // Getters
     glm::vec3 get_intensity() const { return m_intensity; }
-
-    glm::vec3 get_position() const { return m_position; }
 
     // Setters
     void set_intensity(glm::vec3 intensity) { m_intensity = intensity; }

@@ -3,6 +3,7 @@
 #include <vector>
 #include "../src/model/model.hpp"
 #include "../src/scene/camera.hpp"
+#include "../src/scene/cube.hpp"
 #include "../src/scene/lights.hpp"
 #include "../src/scene/loadShader.hpp"
 #include "../src/tools/vbovao.hpp"
@@ -38,8 +39,12 @@ int main()
 
     LoadShader ShaderLight("shaders/3D.vs.glsl", "shaders/lights.fs.glsl");
 
+    LoadShader ShaderCube("shaders/3D.vs.glsl", "shaders/text2D.fs.glsl");
+
     // Load texture
     img::Image img_ladybug = p6::load_image_buffer("assets/models/Ladybug.jpg");
+
+    img::Image img_cube = p6::load_image_buffer("assets/models/wood.jpg");
 
     // Retrieve uniform variables Light
     ShaderLight.addUniformVariable("uMVPMatrix");
@@ -54,6 +59,11 @@ int main()
     ShaderLight.addUniformVariable("uShininess");
     ShaderLight.addUniformVariable("uTextLadybug");
 
+    ShaderCube.addUniformVariable("uTexture");
+    ShaderCube.addUniformVariable("uMVPMatrix");
+    ShaderCube.addUniformVariable("uMVMatrix");
+    ShaderCube.addUniformVariable("uNormalMatrix");
+
     // Initialisation de la texture
     GLuint textureLadybug;
     glGenTextures(1, &textureLadybug);
@@ -63,6 +73,9 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    Cube cube(5.f);
+    cube.init(img_cube);
 
     // Creation du VBO
     VBO vboBoids;
@@ -110,7 +123,8 @@ int main()
 
     // light
 
-    Light lightScene = Light(glm::vec3{1000});
+    Light lightScene = Light(glm::vec3{100});
+
     // Light light2 = Light(glm::vec3{0});
 
     /* Loop until the user closes the window */
@@ -142,6 +156,12 @@ int main()
         glClearColor(0.2f, 0.2f, 0.2f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        MVMatrix     = glm::translate(glm::mat4(1.0), glm::vec3(0., -5., -5.));
+        MVMatrix     = viewMatrix * MVMatrix;
+        NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
+
+        lightScene.drawLightScene(glm::vec3(0., 0, 0.), ProjMatrix, viewMatrix, ShaderLight);
+
         // Bind VAO
         vao.bind();
 
@@ -154,7 +174,7 @@ int main()
         ShaderLight.setUniform4fv("uNormalMatrix", NormalMatrix);
 
         // lights
-        lightScene.drawLightScene(glm::vec3{0.f, 0.f, -1.0f}, ProjMatrix, viewMatrix, ShaderLight);
+        // lightScene.drawLightScene(glm::vec3{0.f, 0.f, 0.0f}, ProjMatrix, viewMatrix, ShaderLight);
         // light2.drawLightPlayer(glm::vec3{0.f, 0.f, 0.f}, ProjMatrix, viewMatrix, ShaderLight);
 
         // Gui
@@ -168,6 +188,7 @@ int main()
         ImGui::End();
 
         // Draw boids
+        ShaderLight.use();
 
         for (auto& boid : boids)
         {
@@ -176,6 +197,9 @@ int main()
             boid.update_direction(boids);
         }
 
+        ShaderCube.use();
+        cube.draw(glm::vec3(0., -5., -5.), glm::vec3{5.}, ShaderCube, viewMatrix, ProjMatrix);
+
         // Debind VAO
         vao.unbind();
 
@@ -183,6 +207,8 @@ int main()
     };
 
     ctx.start();
+
+    cube.~Cube();
 
     lightScene.~Light();
     // light2.~Light();
