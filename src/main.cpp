@@ -46,7 +46,7 @@ int main()
 
     // Load texture
     img::Image img_ladybug = p6::load_image_buffer("assets/textures/dragonfly.png");
-    // img::Image img_person  = p6::load_image_buffer("assets/textures/barque.jpg");
+    img::Image img_person  = p6::load_image_buffer("assets/textures/DiffMap.png");
 
     img::Image img_cube = p6::load_image_buffer("assets/textures/aerial_rocks_02_diff_4k.jpg");
 
@@ -70,8 +70,8 @@ int main()
 
     Model ladybug = Model();
     ladybug.loadModel("dragonfly.obj");
-    // Model person = Model();
-    // person.loadModel("barque.obj");
+    Model person = Model();
+    person.loadModel("skeleton2.obj");
 
     // Initialisation de la texture
     GLuint textureLadybug;
@@ -83,57 +83,26 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    // GLuint texturePerson;
-    // glGenTextures(1, &texturePerson);
-    // glBindTexture(GL_TEXTURE_2D, texturePerson);
+    GLuint texturePerson;
+    glGenTextures(1, &texturePerson);
+    glBindTexture(GL_TEXTURE_2D, texturePerson);
 
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_person.width(), img_person.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img_person.data());
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // glBindTexture(GL_TEXTURE_2D, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_person.width(), img_person.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img_person.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     // Initialisation de la texture
     ladybug.setVbo();
     ladybug.setVao();
-    // person.setVbo();
-    // person.setVao();
+    person.setVbo();
+    person.setVao();
 
     Cube cube(5.f);
     cube.init(img_cube);
 
-    // Creation du VBO
-    // VBO vboBoids;
-    // vboBoids.bind();
-
-    // Creation de la forme de la sphère
-    // const std::vector<glimac::ShapeVertex> vertices = glimac::sphere_vertices(1.f, 32, 16);
-
-    // Fill coordinates in the VBO (Static is for constant variables)
-    // vboBoids.setData(vertices.data(), vertices.size() * sizeof(glimac::ShapeVertex));
-
     // Option to see tests in depth?
     glEnable(GL_DEPTH_TEST);
-
-    // Creation du VAO
-    // VAO vao;
-    // vao.bind();
-
-    // const GLuint VERTEX_ATTR_POSITION = 0;
-    // const GLuint VERTEX_ATTR_NORM     = 1;
-    // const GLuint VERTEX_ATTR_UV       = 2;
-    // glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
-    // glEnableVertexAttribArray(VERTEX_ATTR_NORM);
-    // glEnableVertexAttribArray(VERTEX_ATTR_UV);
-
-    // glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid*)(offsetof(glimac::ShapeVertex, position)));
-    // glVertexAttribPointer(VERTEX_ATTR_NORM, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid*)(offsetof(glimac::ShapeVertex, normal)));
-    // glVertexAttribPointer(VERTEX_ATTR_UV, 2, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid*)(offsetof(glimac::ShapeVertex, texCoords)));
-
-    // // Debind du VBO
-    // vboBoids.unbind();
-
-    // // Debind du VAO
-    // vao.unbind();
 
     // Calcul des différentes matrices nécessaires pour les shaders
     glm::mat4 ProjMatrix;
@@ -186,27 +155,10 @@ int main()
 
         lightScene.drawLightScene(glm::vec3(0., 0, 0.), ProjMatrix, viewMatrix, ShaderLight);
 
-        // person.draw(glm::vec3(0., 0., 0.), glm::vec3(0.1), ProjMatrix, viewMatrix, ShaderLight, texturePerson);
+        person.draw(glm::vec3(0., 0., 0.), glm::vec3(2.0), ProjMatrix, viewMatrix, ShaderLight, texturePerson);
 
         ShaderCube.use();
         cube.draw(glm::vec3(0., -5., -5.), glm::vec3{5.}, ShaderCube, viewMatrix, ProjMatrix);
-
-        // ladybug.draw(glm::vec3(0., 0., 0.), glm::vec3(0.1), ProjMatrix, viewMatrix, ShaderLight, textureLadybug);
-
-        // Bind VAO
-        // vao.bind();
-
-        // Bind texture Ladybug
-        // glBindTexture(GL_TEXTURE_2D, textureLadybug);
-
-        // Apply matrices in the shaders
-        // ShaderLight.setUniform4fv("uMVPMatrix", ProjMatrix * MVMatrix);
-        // ShaderLight.setUniform4fv("uMVMatrix", MVMatrix);
-        // ShaderLight.setUniform4fv("uNormalMatrix", NormalMatrix);
-
-        // lights
-        // lightScene.drawLightScene(glm::vec3{0.f, 0.f, 0.0f}, ProjMatrix, viewMatrix, ShaderLight);
-        // light2.drawLightPlayer(glm::vec3{0.f, 0.f, 0.f}, ProjMatrix, viewMatrix, ShaderLight);
 
         // Gui
         ImGui::Begin("Slider");
@@ -227,17 +179,12 @@ int main()
             boid.update_pos();
             boid.update_direction(boids);
         }
-
-        // Debind VAO
-        // vao.unbind();
-
-        // glBindTexture(GL_TEXTURE_2D, 0);
     };
 
     ctx.start();
 
     ladybug.~Model();
-    // person.~Model();
+    person.~Model();
 
     cube.~Cube();
 
