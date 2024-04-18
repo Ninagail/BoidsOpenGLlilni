@@ -59,30 +59,30 @@ void Boids::update_pos()
 {
     m_position += m_speed;
 
-    if (m_position.x <= -1.975f)
+    if (m_position.x <= -3.975f)
     {
-        m_position.x += 2.95f;
+        m_position.x += 4.95f;
     }
-    else if (m_position.x >= 1.975f)
+    else if (m_position.x >= 3.975f)
     {
-        m_position.x -= 2.95f;
+        m_position.x -= 4.95f;
     }
 
-    if (m_position.y <= -1.975f)
+    if (m_position.y <= -3.975f)
     {
-        m_position.y += 2.95f;
+        m_position.y += 4.95f;
     }
-    else if (m_position.y >= 1.975f)
+    else if (m_position.y >= 3.975f)
     {
-        m_position.y -= 2.95f;
+        m_position.y -= 4.95f;
     }
-    if (m_position.z <= -1.975f)
+    if (m_position.z <= -3.975f)
     {
-        m_position.z += 2.95f;
+        m_position.z += 4.95f;
     }
-    else if (m_position.z >= 1.975f)
+    else if (m_position.z >= 3.975f)
     {
-        m_position.z -= 2.95f;
+        m_position.z -= 4.95f;
     }
 }
 

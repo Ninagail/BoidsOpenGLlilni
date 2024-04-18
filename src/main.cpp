@@ -1,9 +1,14 @@
 #include <iostream>
 #include <vector>
+#include "../src/model/model.hpp"
+#include "../src/scene/camera.hpp"
 #include "../src/scene/lights.hpp"
 #include "../src/scene/loadShader.hpp"
 #include "../src/tools/vbovao.hpp"
+#include "GLFW/glfw3.h"
 #include "boids/boids.hpp"
+#include "glimac/FreeflyCamera.hpp"
+#include "glimac/TrackballCamera.hpp"
 #include "glimac/sphere_vertices.hpp"
 #include "glm/ext/quaternion_geometric.hpp"
 #include "glm/ext/scalar_constants.hpp"
@@ -12,90 +17,6 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "img/src/Image.h"
 #include "p6/p6.h"
-
-#define TINYOBJLOADER_IMPLEMENTATION
-#include "tiny_obj_loader.h"
-
-int const window_width  = 1280;
-int const window_height = 720;
-
-bool loadOBJ(const std::string& objPath, std::vector<glimac::ShapeVertex>& vertices)
-{
-    std::string                      inputfile = objPath;
-    tinyobj::attrib_t                attrib;
-    std::vector<tinyobj::shape_t>    shapes;
-    std::vector<tinyobj::material_t> materials;
-
-    std::string warn;
-    std::string err;
-
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, inputfile.c_str(), nullptr);
-
-    if (!warn.empty())
-    {
-        std::cout << warn << std::endl;
-    }
-
-    if (!err.empty())
-    {
-        std::cerr << err << std::endl;
-    }
-
-    if (!ret)
-    {
-        exit(1);
-    }
-
-    // Loop over shapes
-    for (size_t s = 0; s < shapes.size(); s++)
-    {
-        // Loop over faces(polygon)
-        size_t index_offset = 0;
-        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
-        {
-            size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]);
-
-            // Loop over vertices in the face.
-            for (size_t v = 0; v < fv; v++)
-            {
-                // access to vertex
-                tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
-
-                glimac::ShapeVertex newVertex = glimac::ShapeVertex(
-
-                    // POSITION
-                    glm::vec3(
-                        tinyobj::real_t(attrib.vertices[3 * size_t(idx.vertex_index) + 0]),
-                        tinyobj::real_t(attrib.vertices[3 * size_t(idx.vertex_index) + 1]),
-                        tinyobj::real_t(attrib.vertices[3 * size_t(idx.vertex_index) + 2])
-                    ),
-
-                    // NORMAL
-                    glm::vec3(
-                        tinyobj::real_t(attrib.normals[3 * size_t(idx.normal_index) + 0]), // nx
-                        tinyobj::real_t(attrib.normals[3 * size_t(idx.normal_index) + 1]), // ny
-                        tinyobj::real_t(attrib.normals[3 * size_t(idx.normal_index) + 2])  // nz
-                    ),
-
-                    // TEXTURE_COORDINATES
-                    glm::vec2(
-                        tinyobj::real_t(attrib.texcoords[2 * size_t(idx.texcoord_index) + 0]), // tx
-                        tinyobj::real_t(attrib.texcoords[2 * size_t(idx.texcoord_index) + 1])  // ty
-                    )
-                );
-                vertices.push_back(newVertex);
-                // Optional: vertex colors
-                // tinyobj::real_t red   = attrib.colors[3*size_t(idx.vertex_index)+0];
-                // tinyobj::real_t green = attrib.colors[3*size_t(idx.vertex_index)+1];
-                // tinyobj::real_t blue  = attrib.colors[3*size_t(idx.vertex_index)+2];
-            }
-            index_offset += fv;
-
-            // per-face material
-            shapes[s].mesh.material_ids[f];
-        }
-    }
-};
 
 int main()
 {
@@ -139,6 +60,16 @@ int main()
     ShaderLight.addUniformVariable("uShininess");
     ShaderLight.addUniformVariable("uText");
 
+    // Initialisation de la texture
+    GLuint textureLadybug;
+    glGenTextures(1, &textureLadybug);
+    glBindTexture(GL_TEXTURE_2D, textureLadybug);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_ladybug.width(), img_ladybug.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img_ladybug.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
     // Creation du VBO
     VBO vboBoids;
     vboBoids.bind();
@@ -159,16 +90,6 @@ int main()
 
     // Option to see tests in depth?
     glEnable(GL_DEPTH_TEST);
-
-    // Initialisation de la texture
-    GLuint textureLadybug;
-    glGenTextures(1, &textureLadybug);
-    glBindTexture(GL_TEXTURE_2D, textureLadybug);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_ladybug.width(), img_ladybug.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img_ladybug.data());
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
 
     // Creation du VAO
     VAO vao;
@@ -198,6 +119,15 @@ int main()
 
     ProjMatrix = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
 
+    // camera
+    // creation cam & initialisation des mouvements
+    // TrackballCamera camera(5, 0, 0);
+    Freefly camera;
+    bool    right = false;
+    bool    left  = false;
+    bool    up    = false;
+    bool    down  = false;
+
     // light
 
     Light light1 = Light(glm::vec3{100000.});
@@ -208,6 +138,77 @@ int main()
         /*********************************
          * HERE SHOULD COME THE RENDERING CODE
          *********************************/
+
+        // camera
+
+        if (right)
+        {
+            camera.moveLeft(-0.1f);
+        }
+        if (left)
+        {
+            camera.moveLeft(0.1f);
+        }
+        if (up)
+        {
+            camera.moveFront(0.1f);
+        }
+        if (down)
+        {
+            camera.moveFront(-0.1f);
+        }
+
+        ctx.key_pressed = [&right, &up, &left, &down](p6::Key key) {
+            if (key.logical == "d")
+            {
+                right = true;
+            }
+            if (key.logical == "q")
+            {
+                left = true;
+            }
+            if (key.logical == "z")
+            {
+                up = true;
+            }
+            if (key.logical == "s")
+            {
+                down = true;
+            }
+        };
+
+        ctx.key_released = [&right, &up, &left, &down](p6::Key key) {
+            if (key.logical == "d")
+            {
+                right = false;
+            }
+            if (key.logical == "q")
+            {
+                left = false;
+            }
+            if (key.logical == "z")
+            {
+                up = false;
+            }
+            if (key.logical == "s")
+            {
+                down = false;
+            }
+        };
+
+        ctx.mouse_dragged = [&camera](const p6::MouseDrag& button) {
+            camera.rotateLeft(button.delta.x * 5);
+            camera.rotateUp(-button.delta.y * 5);
+        };
+
+        ctx.mouse_scrolled = [&](p6::MouseScroll scroll) {
+            // std::cout << "dx : " << scroll.dx << " et dy : " << scroll.dy << std::endl;
+            // dy = -1 recul
+            // dy = 1 avance
+            camera.moveFront(-scroll.dy);
+        };
+
+        glm::mat4 viewMatrix = camera.getViewMatrix();
 
         ShaderLight.use();
         glClearColor(0.2f, 0.2f, 0.2f, 1.f);
@@ -220,13 +221,11 @@ int main()
         glBindTexture(GL_TEXTURE_2D, textureLadybug);
 
         // Ladybug
-        MVMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0., 0., -5.));
+        // MVMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0., 0., -5.));
         // MVMatrix     = glm::rotate(MVMatrix, glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
-        NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
+        // NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
         // lights
-        light1.drawLightScene(glm::vec3(0.0, 5, -5.0), ProjMatrix, MVMatrix, ShaderLight);
-        light2.drawLightPlayer(glm::vec3(0.0, 0.0, 0.0), ProjMatrix, MVMatrix, ShaderLight);
 
         ShaderText.use();
         // Set texture Ladybug
@@ -250,7 +249,7 @@ int main()
 
         for (auto& boid : boids)
         {
-            boid.drawBoids3D(vertices, boids, ProjMatrix, NormalMatrix, MVMatrix, ShaderText, textureLadybug);
+            boid.drawBoids3D(vertices, boids, ProjMatrix, NormalMatrix, viewMatrix, ShaderText, textureLadybug);
             boid.update_pos();
             boid.update_direction(boids);
         }
