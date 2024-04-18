@@ -11,8 +11,8 @@ private:
     glm::vec3 m_position;
 
 public:
-    Light(glm::vec3 intensity, glm::vec3 position)
-        : m_intensity(intensity), m_position(position){};
+    Light(glm::vec3 intensity)
+        : m_intensity(intensity){};
 
     ~Light() = default;
 
