@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include "../src/model/model.hpp"
+#include "../src/person/person.hpp"
 #include "../src/scene/camera.hpp"
 #include "../src/scene/cube.hpp"
 #include "../src/scene/lights.hpp"
@@ -32,7 +33,7 @@ int main()
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
 
-    std::vector<Boids> boids(50);
+    std::vector<Boids> boids(75);
     for (auto& boid : boids)
     {
         boid.set_speed();
@@ -70,8 +71,8 @@ int main()
 
     Model ladybug = Model();
     ladybug.loadModel("dragonfly.obj");
-    Model person = Model();
-    person.loadModel("skeleton2.obj");
+    Model personModel = Model();
+    personModel.loadModel("skeleton2.obj");
 
     // Initialisation de la texture
     GLuint textureLadybug;
@@ -95,8 +96,8 @@ int main()
     // Initialisation de la texture
     ladybug.setVbo();
     ladybug.setVao();
-    person.setVbo();
-    person.setVao();
+    personModel.setVbo();
+    personModel.setVao();
 
     Cube cube(5.f);
     cube.init(img_cube);
@@ -112,13 +113,19 @@ int main()
     ProjMatrix = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
 
     // camera
-    Camera camera;
+    Camera    camera;
+    Person    personCam;
+    bool      right          = false;
+    bool      left           = false;
+    bool      up             = false;
+    bool      down           = false;
+    glm::vec3 personPosition = personCam.getPosition();
 
     // light
 
     Light lightScene = Light(glm::vec3{100});
 
-    // Light light2 = Light(glm::vec3{0});
+    Light lightPerson = Light(glm::vec3{100});
 
     /* Loop until the user closes the window */
     ctx.update = [&]() {
@@ -127,6 +134,7 @@ int main()
          *********************************/
 
         // camera
+        cameraOption(personCam, left, right, up, down, ctx);
 
         ctx.key_pressed = [&camera](const p6::Key& key) {
             camera.handleKeyPressed(key);
@@ -154,8 +162,9 @@ int main()
         NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
         lightScene.drawLightScene(glm::vec3(0., 0, 0.), ProjMatrix, viewMatrix, ShaderLight);
+        lightPerson.drawLightPlayer(personCam.getPosition(), ProjMatrix, viewMatrix, ShaderLight);
 
-        person.draw(glm::vec3(0., 0., 0.), glm::vec3(2.0), ProjMatrix, viewMatrix, ShaderLight, texturePerson);
+        personCam.drawPerson(personModel, viewMatrix, ProjMatrix, ShaderLight, texturePerson);
 
         ShaderCube.use();
         cube.draw(glm::vec3(0., -5., -5.), glm::vec3{5.}, ShaderCube, viewMatrix, ProjMatrix);
@@ -184,12 +193,12 @@ int main()
     ctx.start();
 
     ladybug.~Model();
-    person.~Model();
+    personModel.~Model();
 
     cube.~Cube();
 
     lightScene.~Light();
-    // light2.~Light();
+    lightPerson.~Light();
 
     glDeleteTextures(1, &textureLadybug);
 

@@ -26,7 +26,7 @@ void Boids::drawBoids3D(Model& model, glm::mat4 ProjMatrix, glm::mat4 NormalMatr
 
     // glm::mat4 MVMatrixBoids = glm::translate(glm::mat4{1.f}, this->m_pos); // Translation
 
-    MVMatrixBoids = glm::scale(MVMatrixBoids, glm::vec3{this->m_size * 0.5f}); // Translation * Rotation * Translation * Scale
+    MVMatrixBoids = glm::scale(MVMatrixBoids, glm::vec3{this->m_size * 0.2f}); // Translation * Rotation * Translation * Scale
     MVMatrixBoids = viewMatrix * MVMatrixBoids;
 
     loadShader.setUniform1i("uTextLadybug", 0);
