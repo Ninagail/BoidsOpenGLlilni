@@ -1,0 +1,22 @@
+# Blender 3.6.2 MTL File: 'barque .blend'
+# www.blender.org
+
+newmtl bois
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gailn/OneDrive/Documents/Travail/IMAC/S3/Crea3D/Assets/Textures/wood_floor_deck_1k.blend/textures/wood_floor_deck_diff_1k.jpg
+
+newmtl rames
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gailn/OneDrive/Documents/Travail/IMAC/S3/Crea3D/Assets/Textures/wood_table_worn_1k.blend/textures/wood_table_worn_diff_1k.jpg

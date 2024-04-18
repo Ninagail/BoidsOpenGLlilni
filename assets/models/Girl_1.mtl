@@ -1,0 +1,98 @@
+# Blender MTL File: 'Girl_1.blend'
+# Material Count: 9
+
+newmtl Human.body
+Ns 359.999993
+Ka 1.000000 1.000000 1.000000
+Kd 0.721000 0.568000 0.431000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Human.eyebrow002
+Ns 90.000007
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_d C:\\Users\\user\\AppData\\Roaming\\Blender Foundation\\Blender\\3.6\\mpfb\\data\\eyebrows\\eyebrow002\\eyebrow002.png
+
+newmtl Human.eyelashes01
+Ns 90.000007
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_d C:\\Users\\user\\AppData\\Roaming\\Blender Foundation\\Blender\\3.6\\mpfb\\data\\eyelashes\\eyelashes01\\eyelashes01.png
+
+newmtl Human.high-poly
+Ns 359.999993
+Ka 1.000000 1.000000 1.000000
+Kd 0.950000 0.950000 0.950000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Human.shoes04
+Ns 90.000007
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_d C:\\Users\\user\\AppData\\Roaming\\Blender Foundation\\Blender\\3.6\\mpfb\\data\\clothes\\shoes04\\shoes04_diffuse.png
+
+newmtl Human.teeth_shape01
+Ns 90.000007
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_d C:\\Users\\user\\AppData\\Roaming\\Blender Foundation\\Blender\\3.6\\mpfb\\data\\teeth\\teeth_shape01\\teeth.png
+
+newmtl Human.toigo_bodice_dress_with_lace_ruffle_skirt
+Ns 161.252451
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_d C:\\Users\\user\\AppData\\Roaming\\Blender Foundation\\Blender\\3.6\\mpfb\\data\\clothes\\toigo_bodice_dress_with_lace_ruffle_skirt\\SkirtLaceRuffle.png
+
+newmtl Human.tongue01
+Ns 90.000007
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_d C:\\Users\\user\\AppData\\Roaming\\Blender Foundation\\Blender\\3.6\\mpfb\\data\\tongue\\tongue01\\tongue01_diffuse.png
+
+newmtl Material.002
+Ns 334.228516
+Ka 0.414062 0.414062 0.414062
+Kd 0.066806 0.066806 0.066806
+Ks 0.492188 0.492188 0.492188
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3

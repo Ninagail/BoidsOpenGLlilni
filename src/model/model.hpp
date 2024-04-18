@@ -1,89 +1,77 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include <glimac/common.hpp>
+#include "../src/scene/lights.hpp"
 #include "../src/scene/loadShader.hpp"
 #include "glm/fwd.hpp"
 #include "p6/p6.h"
-#define TINYOBJLOADER_IMPLEMENTATION
-#include "tiny_obj_loader.h"
 
-int const window_width  = 1280;
-int const window_height = 720;
+class Model {
+protected:
+    GLuint m_vbo;
+    GLuint m_vao;
+    // rendering::Texture m_texture; //pas encore géré
+    std::vector<glimac::ShapeVertex> m_vertices;
+    std::vector<int>                 m_index;
+    GLsizei                          m_vertexCount;
+    float                            m_Rotation;
 
-bool loadOBJ(const std::string& objPath, std::vector<glimac::ShapeVertex>& vertices)
-{
-    std::string                      inputfile = objPath;
-    tinyobj::attrib_t                attrib;
-    std::vector<tinyobj::shape_t>    shapes;
-    std::vector<tinyobj::material_t> materials;
+public:
+    /// \brief constructor param of the model class
+    /// \param texture the texture of the model
+    // Model(rendering::Texture texture):
+    //     m_texture(texture)
+    //     {}
+    /// \brief default constructor
+    Model() = default;
 
-    std::string warn;
-    std::string err;
-
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, inputfile.c_str(), nullptr);
-
-    if (!warn.empty())
+    /// \brief cdelete model
+    ~Model()
     {
-        std::cout << warn << std::endl;
+        glDeleteBuffers(1, &m_vbo);
+        glDeleteVertexArrays(1, &m_vao);
+    };
+
+    /// \brief draw the model
+    void drawArray(GLuint textName);
+
+    /// \brief define the rotation of the model
+    void setRotation(float angle);
+
+    /// \brief set the drawSetup
+    /// \param pos position of the model
+    /// \param scale scale of the model
+    /// \param ProjMatrix matrice of projection for the shader
+    /// \param ViewMatrix viewMatrix (camera) for the shader
+    /// \param program shader will be used for drawing the model
+    /// \param textName identification of the Texture of the model
+    void draw(glm::vec3 pos, glm::vec3 scales, glm::mat4 ProjMatrix, glm::mat4 ViewMatrix, LoadShader& loadShader, GLuint textName);
+
+    /// \brief set and bind a vao
+    void setVao();
+
+    /// \brief set and bind vbo
+    void setVbo();
+
+    /// \brief set buffers
+    void setBuffers();
+
+    /// \brief get data
+    std::vector<glimac::ShapeVertex> getData() const;
+
+    /// \brief get data of the vertices
+    const glimac::ShapeVertex* getDataPointer() const;
+
+    /// \brief get the number of the vertices
+    GLsizei getVertexCount() const
+    {
+        return m_vertexCount;
     }
 
-    if (!err.empty())
-    {
-        std::cerr << err << std::endl;
-    }
+    /// \brief get the index pointer of the model
+    const int* getIndexPointer() const;
 
-    if (!ret)
-    {
-        exit(1);
-    }
-
-    // Loop over shapes
-    for (size_t s = 0; s < shapes.size(); s++)
-    {
-        // Loop over faces(polygon)
-        size_t index_offset = 0;
-        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
-        {
-            size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]);
-
-            // Loop over vertices in the face.
-            for (size_t v = 0; v < fv; v++)
-            {
-                // access to vertex
-                tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
-
-                glimac::ShapeVertex newVertex = glimac::ShapeVertex(
-
-                    // POSITION
-                    glm::vec3(
-                        tinyobj::real_t(attrib.vertices[3 * size_t(idx.vertex_index) + 0]),
-                        tinyobj::real_t(attrib.vertices[3 * size_t(idx.vertex_index) + 1]),
-                        tinyobj::real_t(attrib.vertices[3 * size_t(idx.vertex_index) + 2])
-                    ),
-
-                    // NORMAL
-                    glm::vec3(
-                        tinyobj::real_t(attrib.normals[3 * size_t(idx.normal_index) + 0]), // nx
-                        tinyobj::real_t(attrib.normals[3 * size_t(idx.normal_index) + 1]), // ny
-                        tinyobj::real_t(attrib.normals[3 * size_t(idx.normal_index) + 2])  // nz
-                    ),
-
-                    // TEXTURE_COORDINATES
-                    glm::vec2(
-                        tinyobj::real_t(attrib.texcoords[2 * size_t(idx.texcoord_index) + 0]), // tx
-                        tinyobj::real_t(attrib.texcoords[2 * size_t(idx.texcoord_index) + 1])  // ty
-                    )
-                );
-                vertices.push_back(newVertex);
-                // Optional: vertex colors
-                // tinyobj::real_t red   = attrib.colors[3*size_t(idx.vertex_index)+0];
-                // tinyobj::real_t green = attrib.colors[3*size_t(idx.vertex_index)+1];
-                // tinyobj::real_t blue  = attrib.colors[3*size_t(idx.vertex_index)+2];
-            }
-            index_offset += fv;
-
-            // per-face material
-            shapes[s].mesh.material_ids[f];
-        }
-    }
+    /// \brief loader of .obj with TinyObjLoader librairy
+    /// \param fileName name of the .obj
+    void loadModel(const std::string& fileName);
 };

@@ -18,41 +18,27 @@ void Boids::drawBoids(p6::Context& ctx) const
     ctx.use_stroke = false;
 }
 
-void Boids::drawBoids3D(const std::vector<glimac::ShapeVertex>& vertices, const std::vector<Boids>& boids, glm::mat4 ProjMatrix, glm::mat4 NormalMatrix, glm::mat4 viewMatrix, LoadShader& shader, GLuint textName)
-
+void Boids::drawBoids3D(Model& model, glm::mat4 ProjMatrix, glm::mat4 NormalMatrix, glm::mat4 viewMatrix, LoadShader& loadShader, GLuint textName)
 {
-    // Bind texture Ladybug
-    // glBindTexture(GL_TEXTURE_2D, textureLadybug);
+    glm::mat4 MVMatrixBoids = glm::translate(glm::mat4{1.f}, {0.f, 0.f, -3.f});                        // Translation
+    MVMatrixBoids           = glm::rotate(MVMatrixBoids, glm::radians(180.0f), glm::vec3(0., 1., 0.)); // Translation * Rotation
+    MVMatrixBoids           = glm::translate(MVMatrixBoids, this->m_position);                         // Translation * Rotation * Translation
 
-    // // Set texture Ladybug
-    // glUniform1i(uTextLadybug, 0);
+    // glm::mat4 MVMatrixBoids = glm::translate(glm::mat4{1.f}, this->m_pos); // Translation
 
-    // glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glimac::ShapeVertex), vertices.data(), GL_STATIC_DRAW);
-    for (const auto& boid : boids)
-    {
-        // Calculate the model matrix for the boid
-        glm::mat4 MVMatrixBoids = glm::translate(glm::mat4{1.f}, {0.f, 0.f, -3.f});                        // Translation
-        MVMatrixBoids           = glm::rotate(MVMatrixBoids, glm::radians(180.0f), glm::vec3(0., 1., 0.)); // Translation * Rotation
-        MVMatrixBoids           = glm::translate(MVMatrixBoids, this->m_position);                         // Translation * Rotation * Translation
+    MVMatrixBoids = glm::scale(MVMatrixBoids, glm::vec3{this->m_size * 0.5f}); // Translation * Rotation * Translation * Scale
+    MVMatrixBoids = viewMatrix * MVMatrixBoids;
 
-        // glm::mat4 MVMatrixBoids = glm::translate(glm::mat4{1.f}, this->m_pos); // Translation
+    loadShader.setUniform1i("uTextLadybug", 0);
+    loadShader.setUniform4fv("uMVPMatrix", ProjMatrix * MVMatrixBoids);
+    loadShader.setUniform4fv("uMVMatrix", MVMatrixBoids);
+    loadShader.setUniform4fv("uNormalMatrix", NormalMatrix);
 
-        MVMatrixBoids = glm::scale(MVMatrixBoids, glm::vec3{this->m_size}); // Translation * Rotation * Translation * Scale
-        MVMatrixBoids = viewMatrix * MVMatrixBoids;
+    // glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrixBoids));
+    // glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrixBoids));
+    // glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 
-        shader.setUniform4fv("uMVPMatrix", ProjMatrix * MVMatrixBoids);
-        shader.setUniform4fv("uMVMatrix", MVMatrixBoids);
-        shader.setUniform4fv("uNormalMatrix", NormalMatrix);
-
-        // Fill coordinates in the VBO (Static is for constant variables)
-        // glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glimac::ShapeVertex), vertices.data(), GL_STATIC_DRAW);
-
-        // Draw the boid
-        glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-    }
-
-    // Unbind texture and VAO
-    // glBindTexture(GL_TEXTURE_2D, 0);
+    model.drawArray(textName);
 }
 
 void Boids::update_pos()
