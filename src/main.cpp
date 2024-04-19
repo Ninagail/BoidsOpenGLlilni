@@ -48,6 +48,8 @@ int main()
     // Load texture
     img::Image img_ladybug = p6::load_image_buffer("assets/textures/dragonfly.png");
     img::Image img_person  = p6::load_image_buffer("assets/textures/titan.png");
+    img::Image img_barque  = p6::load_image_buffer("assets/textures/barque.jpg");
+    img::Image img_ocean   = p6::load_image_buffer("assets/textures/ocean.png");
 
     img::Image img_cube = p6::load_image_buffer("assets/textures/aerial_rocks_02_diff_4k.jpg");
 
@@ -73,6 +75,10 @@ int main()
     ladybug.loadModel("dragonfly.obj");
     Model personModel = Model();
     personModel.loadModel("titan.obj");
+    Model barque = Model();
+    barque.loadModel("barque.obj");
+    Model ocean = Model();
+    ocean.loadModel("ocean.obj");
 
     // Initialisation de la texture
     GLuint textureLadybug;
@@ -93,11 +99,33 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
 
+    GLuint textureBarque;
+    glGenTextures(1, &textureBarque);
+    glBindTexture(GL_TEXTURE_2D, textureBarque);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_barque.width(), img_barque.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img_barque.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    GLuint textureOcean;
+    glGenTextures(1, &textureOcean);
+    glBindTexture(GL_TEXTURE_2D, textureOcean);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_ocean.width(), img_ocean.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img_ocean.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
     // Initialisation de la texture
     ladybug.setVbo();
     ladybug.setVao();
     personModel.setVbo();
     personModel.setVao();
+    barque.setVbo();
+    barque.setVao();
+    ocean.setVbo();
+    ocean.setVao();
 
     Cube cube(5.f);
     cube.init(img_cube);
@@ -171,6 +199,10 @@ int main()
         // Draw boids
         ShaderLight.use();
 
+        barque.draw(glm::vec3(0., -2., -5.), glm::vec3{1.}, ProjMatrix, viewMatrix, ShaderLight, textureBarque);
+
+        ocean.draw(glm::vec3(0., -5., 0.), glm::vec3{5.}, ProjMatrix, viewMatrix, ShaderLight, textureOcean);
+
         for (auto& boid : boids)
         {
             boid.drawBoids3D(ladybug, ProjMatrix, NormalMatrix, viewMatrix, ShaderLight, textureLadybug);
@@ -183,6 +215,8 @@ int main()
 
     ladybug.~Model();
     personModel.~Model();
+    barque.~Model();
+    ocean.~Model();
 
     cube.~Cube();
 
@@ -190,6 +224,9 @@ int main()
     lightPerson.~Light();
 
     glDeleteTextures(1, &textureLadybug);
+    // glDeleteTextures(1, &texturePerson);
+    glDeleteTextures(1, &textureBarque);
+    glDeleteTextures(1, &textureOcean);
 
     return 0;
 }
