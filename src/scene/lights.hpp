@@ -17,7 +17,7 @@ public:
 
     // méthodes
     void drawLightScene(glm::vec3 pos, glm::mat4 projMatrix, glm::mat4 viewMatrix, LoadShader& loadshader);
-    void drawLightPlayer(glm::vec3 pos, glm::mat4 projMatrix, glm::mat4 viewMatrix, LoadShader& loadshader);
+    void drawLightPerson(glm::vec3 pos, glm::mat4 projMatrix, glm::mat4 viewMatrix, LoadShader& loadshader);
 
     // Getters
     glm::vec3 get_intensity() const { return m_intensity; }

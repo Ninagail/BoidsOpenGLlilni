@@ -26,7 +26,7 @@ void Person::setRotationAngle(float rotationAngle)
 }
 
 Person::Person()
-    : m_Position(glm::vec3(0., 0., 0.)), m_Phi(p6::PI), m_Theta(0.), m_RotationAngle(0.)
+    : m_Position(glm::vec3(0., 0.0, -5.)), m_Phi(p6::PI), m_Theta(0.), m_RotationAngle(0.)
 {
     this->computeDirectionVectors();
 };
@@ -110,19 +110,19 @@ void cameraOption(Person& person, bool& left, bool& right, bool& up, bool& down,
     };
 
     ctx.key_released = [&right, &up, &left, &down](p6::Key key) {
-        if (key.logical == "d")
+        if (key.logical == "k")
         {
             right = false;
         }
-        if (key.logical == "q")
+        if (key.logical == "h")
         {
             left = false;
         }
-        if (key.logical == "z")
+        if (key.logical == "u")
         {
             up = false;
         }
-        if (key.logical == "s")
+        if (key.logical == "n")
         {
             down = false;
         }
@@ -143,9 +143,9 @@ void Person::drawPerson(Model& model, glm::mat4 ViewMatrix, glm::mat4 ProjMatrix
     // glm::mat4 ViewMatrix = camera->getViewMatrix();
     ViewMatrix = glm::translate(ViewMatrix, m_Position);
     // ViewMatrix = glm::rotate(ViewMatrix, 45.f, glm::vec3(1.,0.,0.));
-    ViewMatrix = glm::translate(ViewMatrix, glm::vec3(0, -0.7, 0.0));
+    ViewMatrix = glm::translate(ViewMatrix, glm::vec3(0, -3.0, 0.0));
 
-    ViewMatrix             = glm::scale(ViewMatrix, glm::vec3(2.0, 2.0, 2.0));
+    ViewMatrix             = glm::scale(ViewMatrix, glm::vec3(0.1, 0.1, -0.1));
     glm::mat4 NormalMatrix = glm::transpose(glm::inverse(ViewMatrix));
 
     loadShader.setUniform1i("uTextLadybug", 0);

@@ -1,0 +1,32 @@
+# Blender 3.6.2 MTL File: 'Ymir Founding Titan.blend'
+# www.blender.org
+
+newmtl Body
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 0.000000
+d 1.000000
+illum 1
+map_Kd C:/Skin.png
+
+newmtl Bones
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 0.000000
+d 1.000000
+illum 1
+map_Kd C:/i_mtl_p7_skulls_bones_set_c.png
+
+newmtl Hair
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 0.000000
+d 1.000000
+illum 1
+map_Kd C:/hair.png

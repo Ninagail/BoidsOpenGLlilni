@@ -1,55 +1,43 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "../src/scene/loadShader.hpp"
-#include "glm/fwd.hpp"
-#include "p6/p6.h"
-
-#pragma once
-
-#include "../src-common/glimac/FreeflyCamera.hpp"
+#include "../src/model/model.hpp"
+#include "../src/person/person.hpp"
 
 class Camera {
 private:
-    Freefly m_Freefly; // Instance de la classe Freefly
+    Person& m_target;   // Référence vers le personnage à suivre
+    Model&  m_model;    // Référence vers le modèle de la caméra
+    float   m_distance; // Distance entre la caméra et le personnage
+    float   m_height;   // Hauteur de la caméra par rapport au personnage
+    float   m_Pitch;    // Angle de hauteur de la caméra
+    float   m_Yaw;      // Angle de rotation horizontale de la caméra
 
 public:
-    // Constructeur par défaut
-    Camera()
-        : m_Freefly() {}
+    // Constructeur prenant une référence vers le personnage et des valeurs initiales pour la distance, le pitch et le yaw
+    Camera(Person& target, Model& model, float distance = 5.0f, float pitch = 20.0f, float yaw = 180.0f)
+        : m_target(target), m_model(model), m_distance(1.5f), m_height(2.0f), m_Pitch(pitch), m_Yaw(yaw) {}
 
-    // Méthodes de déplacement et de rotation
-    void moveLeft(float t) { m_Freefly.moveLeft(t); }
-    void moveFront(float t) { m_Freefly.moveFront(t); }
-    void rotateLeft(float degrees) { m_Freefly.rotateLeft(degrees); }
-    void rotateUp(float degrees) { m_Freefly.rotateUp(degrees); }
-
-    // Obtenir la matrice de vue
-    glm::mat4 getViewMatrix() const { return m_Freefly.getViewMatrix(); }
-
-    // Gestion des événements clavier et souris
-    void handleKeyPressed(p6::Key key)
+    // Fonction pour mettre à jour la vue de la caméra en fonction de la position et de l'orientation du personnage
+    void getViewMatrix(glm::mat4& ViewMatrix)
     {
-        if (key.logical == "d")
-            moveLeft(-0.1f);
-        if (key.logical == "q")
-            moveLeft(0.1f);
-        if (key.logical == "z")
-            moveFront(0.1f);
-        if (key.logical == "s")
-            moveFront(-0.1f);
+        glm::mat4 modelRotationMatrix = glm::rotate(glm::mat4(2.0f), m_target.getRotationAngle(), glm::vec3(0.0f, 1.0f, 0.0f));
+        // Calcul de la position de la caméra en fonction de la viewMatrix du joueur
+        glm::mat4 invPlayerViewMatrix = glm::inverse(ViewMatrix);
+        auto      playerPos           = glm::vec3(invPlayerViewMatrix[3]);
+
+        glm::vec3 cameraPos = playerPos + m_distance * glm::vec3(modelRotationMatrix * glm::vec4(invPlayerViewMatrix[2])) + m_height * glm::vec3(invPlayerViewMatrix[1]);
+        // Mise à jour de la vue de la caméra
+        ViewMatrix = glm::lookAt(cameraPos, playerPos, glm::vec3(0.0f, 1.0f, 0.0f));
+        m_model.setRotation(m_target.getRotationAngle());
+    };
+    // Fonctions pour ajuster les angles de pitch et yaw de la caméra
+    void adjustPitch(float amount)
+    {
+        m_Pitch += amount;
     }
-
-    void handleKeyReleased(p6::Key key) {}
-
-    void handleMouseDragged(const p6::MouseDrag& button)
+    void adjustYaw(float amount)
     {
-        rotateLeft(button.delta.x * 5);
-        rotateUp(-button.delta.y * 5);
-    }
-
-    void handleMouseScrolled(const p6::MouseScroll& scroll)
-    {
-        moveFront(-scroll.dy);
+        m_Yaw += amount;
     }
 };

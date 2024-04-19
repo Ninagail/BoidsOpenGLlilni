@@ -42,7 +42,11 @@ public:
 
     void rotateLeft(float degrees);
 
+    void rotateRight(float degrees);
+
     void rotateUp(float degrees);
+
+    void rotateDown(float degrees);
 
     glm::mat4 getViewMatrix() const;
 

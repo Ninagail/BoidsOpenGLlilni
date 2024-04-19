@@ -21,7 +21,7 @@ void Light::drawLightScene(glm::vec3 pos, glm::mat4 projMatrix, glm::mat4 viewMa
     shader.setUniform4fv("uNormalMatrix", NormalMatrix);
 }
 
-void Light::drawLightPlayer(glm::vec3 pos, glm::mat4 projMatrix, glm::mat4 viewMatrix, LoadShader& shader)
+void Light::drawLightPerson(glm::vec3 pos, glm::mat4 projMatrix, glm::mat4 viewMatrix, LoadShader& shader)
 {
     glm::vec4 LightPos = viewMatrix * glm::vec4(pos, 1.0);
     shader.setUniform3fv("uLightPos2_vs", glm::vec3(LightPos.x, LightPos.y, LightPos.z));

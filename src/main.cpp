@@ -47,7 +47,7 @@ int main()
 
     // Load texture
     img::Image img_ladybug = p6::load_image_buffer("assets/textures/dragonfly.png");
-    img::Image img_person  = p6::load_image_buffer("assets/textures/DiffMap.png");
+    img::Image img_person  = p6::load_image_buffer("assets/textures/titan.png");
 
     img::Image img_cube = p6::load_image_buffer("assets/textures/aerial_rocks_02_diff_4k.jpg");
 
@@ -72,7 +72,7 @@ int main()
     Model ladybug = Model();
     ladybug.loadModel("dragonfly.obj");
     Model personModel = Model();
-    personModel.loadModel("skeleton2.obj");
+    personModel.loadModel("titan.obj");
 
     // Initialisation de la texture
     GLuint textureLadybug;
@@ -113,8 +113,9 @@ int main()
     ProjMatrix = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
 
     // camera
-    Camera    camera;
+
     Person    personCam;
+    Camera    camera(personCam, personModel);
     bool      right          = false;
     bool      left           = false;
     bool      up             = false;
@@ -125,7 +126,7 @@ int main()
 
     Light lightScene = Light(glm::vec3{100});
 
-    Light lightPerson = Light(glm::vec3{100});
+    Light lightPerson = Light(glm::vec3{0.1});
 
     /* Loop until the user closes the window */
     ctx.update = [&]() {
@@ -136,38 +137,26 @@ int main()
         // camera
         cameraOption(personCam, left, right, up, down, ctx);
 
-        ctx.key_pressed = [&camera](const p6::Key& key) {
-            camera.handleKeyPressed(key);
-        };
-        ctx.key_released = [&camera](const p6::Key& key) {
-            camera.handleKeyReleased(key);
-        };
-        ctx.mouse_dragged = [&camera](const p6::MouseDrag& button) {
-            camera.handleMouseDragged(button);
-        };
-
-        ctx.mouse_scrolled = [&camera](const p6::MouseScroll& scroll) {
-            camera.handleMouseScrolled(scroll);
-        };
-
-        glm::mat4 viewMatrix = camera.getViewMatrix();
+        glm::mat4 viewMatrix = personCam.getViewMatrix();
+        camera.getViewMatrix(viewMatrix);
 
         ShaderLight.use();
 
         glClearColor(0.2f, 0.2f, 0.2f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        MVMatrix     = glm::translate(glm::mat4(1.0), glm::vec3(0., -5., -5.));
+        MVMatrix     = glm::translate(glm::mat4(1.0), glm::vec3(0., -10., -5.));
         MVMatrix     = viewMatrix * MVMatrix;
         NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
         lightScene.drawLightScene(glm::vec3(0., 0, 0.), ProjMatrix, viewMatrix, ShaderLight);
-        lightPerson.drawLightPlayer(personCam.getPosition(), ProjMatrix, viewMatrix, ShaderLight);
+        lightPerson.drawLightPerson(personCam.getPosition(), ProjMatrix, viewMatrix, ShaderLight);
 
         personCam.drawPerson(personModel, viewMatrix, ProjMatrix, ShaderLight, texturePerson);
 
         ShaderCube.use();
         cube.draw(glm::vec3(0., -5., -5.), glm::vec3{5.}, ShaderCube, viewMatrix, ProjMatrix);
+        cube.borders(personCam);
 
         // Gui
         ImGui::Begin("Slider");

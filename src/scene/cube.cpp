@@ -197,3 +197,33 @@ void Cube::draw(glm::vec3 pos, glm::vec3 scale, LoadShader& loadShader, glm::mat
     glBindTexture(GL_TEXTURE_2D, texture);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
+
+void Cube::borders(Person& person)
+{
+    glm::vec3 personPosition = person.getPosition();
+
+    float minX = -m_size / 1.5f;
+    float maxX = m_size / 1.5f;
+    float minZ = -m_size * 2;
+    float maxZ = m_size / 6.5f;
+    float minY = -m_size / 5.f;
+    float maxY = m_size / 5.f;
+
+    // Vérifier la coordonnée X
+    if (personPosition.x < minX)
+        person.setPosition(glm::vec3(minX, personPosition.y, personPosition.z));
+    else if (personPosition.x > maxX)
+        person.setPosition(glm::vec3(maxX, personPosition.y, personPosition.z));
+
+    // Vérifier la coordonnée X
+    if (personPosition.y < minY)
+        person.setPosition(glm::vec3(personPosition.x, minY, personPosition.z));
+    else if (personPosition.y > maxY)
+        person.setPosition(glm::vec3(personPosition.x, maxY, personPosition.z));
+
+    // Vérifier la coordonnée Z
+    if (personPosition.z < minZ)
+        person.setPosition(glm::vec3(personPosition.x, personPosition.y, minZ));
+    else if (personPosition.z > maxZ)
+        person.setPosition(glm::vec3(personPosition.x, personPosition.y, maxZ));
+}

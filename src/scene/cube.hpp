@@ -1,11 +1,13 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "../src/person/person.hpp"
 #include "../src/scene/loadShader.hpp"
 #include "glimac/sphere_vertices.hpp"
 #include "glm/fwd.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "p6/p6.h"
+
 
 class Cube {
 private:
@@ -26,4 +28,6 @@ public:
     void init(img::Image& img_load);
 
     void draw(glm::vec3 pos, glm::vec3 scale, LoadShader& loadShader, glm::mat4 viewMatrix, glm::mat4 ProjMatrix) const;
+
+    void borders(Person& person);
 };
