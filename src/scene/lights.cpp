@@ -5,9 +5,9 @@ void Light::drawLightScene(glm::vec3 pos, glm::mat4 projMatrix, glm::mat4 viewMa
 {
     // glm::mat4 ViewMatrixLight = viewMatrix;
     shader.use();
-    shader.setUniform3fv("uKd", glm::vec3(1.0f, 0.95f, 0.8f));
-    shader.setUniform3fv("uKs", glm::vec3(1.0f, 0.95f, 0.8f));
-    shader.setUniform1f("uShininess", 0.6);
+    shader.setUniform3fv("uKd", glm::vec3(1.0f, 0.8f, 0.4f));
+    shader.setUniform3fv("uKs", glm::vec3(1.0f, 0.8f, 0.4f));
+    shader.setUniform1f("uShininess", 0.4);
 
     glm::vec4 LightPos = viewMatrix * glm::vec4(pos, 1.0);
     shader.setUniform3fv("uLightPos_vs", glm::vec3(LightPos.x, LightPos.y, LightPos.z));

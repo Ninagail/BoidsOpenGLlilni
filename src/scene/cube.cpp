@@ -202,12 +202,12 @@ void Cube::borders(Person& person)
 {
     glm::vec3 personPosition = person.getPosition();
 
-    float minX = -m_size / 1.5f;
-    float maxX = m_size / 1.5f;
-    float minZ = -m_size * 2;
-    float maxZ = m_size / 6.5f;
-    float minY = -m_size / 5.f;
-    float maxY = m_size / 5.f;
+    float minX = -m_size + 2;
+    float maxX = m_size - 2;
+    float minZ = -m_size * 2.5;
+    float maxZ = m_size - 8;
+    float minY = -m_size;
+    float maxY = m_size;
 
     // Vérifier la coordonnée X
     if (personPosition.x < minX)

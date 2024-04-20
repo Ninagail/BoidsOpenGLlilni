@@ -143,9 +143,9 @@ void Person::drawPerson(Model& model, glm::mat4 ViewMatrix, glm::mat4 ProjMatrix
     // glm::mat4 ViewMatrix = camera->getViewMatrix();
     ViewMatrix = glm::translate(ViewMatrix, m_Position);
     // ViewMatrix = glm::rotate(ViewMatrix, 45.f, glm::vec3(1.,0.,0.));
-    ViewMatrix = glm::translate(ViewMatrix, glm::vec3(0, -3.0, 0.0));
+    ViewMatrix = glm::translate(ViewMatrix, glm::vec3(0., -4.8, 2.0));
 
-    ViewMatrix             = glm::scale(ViewMatrix, glm::vec3(0.1, 0.1, -0.1));
+    ViewMatrix             = glm::scale(ViewMatrix, glm::vec3(0.12, 0.12, -0.12));
     glm::mat4 NormalMatrix = glm::transpose(glm::inverse(ViewMatrix));
 
     loadShader.setUniform1i("uTextLadybug", 0);

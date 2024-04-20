@@ -48,8 +48,14 @@ int main()
     // Load texture
     img::Image img_ladybug = p6::load_image_buffer("assets/textures/dragonfly.png");
     img::Image img_person  = p6::load_image_buffer("assets/textures/titan.png");
-    img::Image img_barque  = p6::load_image_buffer("assets/textures/barque.jpg");
-    img::Image img_ocean   = p6::load_image_buffer("assets/textures/ocean.png");
+
+    // objects
+    img::Image img_barque = p6::load_image_buffer("assets/textures/barque.jpg");
+    img::Image img_ocean  = p6::load_image_buffer("assets/textures/ocean.png");
+    img::Image img_ile    = p6::load_image_buffer("assets/textures/ile.jpg");
+    img::Image img_trees  = p6::load_image_buffer("assets/textures/trees.jpg");
+    img::Image img_pirate = p6::load_image_buffer("assets/textures/pirate.jpg");
+    img::Image img_cloud  = p6::load_image_buffer("assets/textures/ocean.png");
 
     img::Image img_cube = p6::load_image_buffer("assets/textures/aerial_rocks_02_diff_4k.jpg");
 
@@ -79,6 +85,14 @@ int main()
     barque.loadModel("barque.obj");
     Model ocean = Model();
     ocean.loadModel("ocean.obj");
+    Model ile = Model();
+    ile.loadModel("ile.obj");
+    Model trees = Model();
+    trees.loadModel("trees.obj");
+    Model pirate = Model();
+    pirate.loadModel("pirate.obj");
+    Model cloud = Model();
+    cloud.loadModel("cloud.obj");
 
     // Initialisation de la texture
     GLuint textureLadybug;
@@ -117,6 +131,67 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
 
+    GLuint textureIle;
+    glGenTextures(1, &textureIle);
+    glBindTexture(GL_TEXTURE_2D, textureIle);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_ile.width(), img_ile.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img_ile.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    GLuint textureTrees;
+    glGenTextures(1, &textureTrees);
+    glBindTexture(GL_TEXTURE_2D, textureTrees);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_trees.width(), img_trees.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img_trees.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    GLuint pirateTexture;
+    glGenTextures(1, &pirateTexture);
+    glBindTexture(GL_TEXTURE_2D, pirateTexture);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_pirate.width(), img_pirate.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img_pirate.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    GLuint textureCloud;
+    glGenTextures(1, &textureCloud);
+    glBindTexture(GL_TEXTURE_2D, textureCloud);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_cloud.width(), img_cloud.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img_cloud.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // sphere
+
+    
+
+    VBO vbo;
+    vbo.bind();
+
+    std::vector<glimac::ShapeVertex> vertices = glimac::sphere_vertices(1, 32, 16);
+    vbo.setData(vertices.data(), vertices.size() * sizeof(glimac::ShapeVertex));
+    vbo.unbind();
+    VAO vao;
+    vao.bind();
+    static constexpr GLuint vertex_attr_position = 0;
+    glEnableVertexAttribArray(vertex_attr_position);
+    static constexpr GLuint vertex_attr_normal = 1;
+    glEnableVertexAttribArray(vertex_attr_normal);
+    static constexpr GLuint vertex_attr_texcoords = 2;
+    glEnableVertexAttribArray(vertex_attr_texcoords);
+    vbo.bind();
+    glVertexAttribPointer(vertex_attr_position, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid*)offsetof(glimac::ShapeVertex, position));
+    glVertexAttribPointer(vertex_attr_normal, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid*)offsetof(glimac::ShapeVertex, normal));
+    glVertexAttribPointer(vertex_attr_texcoords, 2, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid*)offsetof(glimac::ShapeVertex, texCoords));
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    vao.unbind();
+
     // Initialisation de la texture
     ladybug.setVbo();
     ladybug.setVao();
@@ -126,6 +201,14 @@ int main()
     barque.setVao();
     ocean.setVbo();
     ocean.setVao();
+    ile.setVbo();
+    ile.setVao();
+    trees.setVbo();
+    trees.setVao();
+    pirate.setVbo();
+    pirate.setVao();
+    cloud.setVbo();
+    cloud.setVao();
 
     Cube cube(5.f);
     cube.init(img_cube);
@@ -172,15 +255,29 @@ int main()
 
         glClearColor(0.2f, 0.2f, 0.2f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        vao.bind();
 
         MVMatrix     = glm::translate(glm::mat4(1.0), glm::vec3(0., -10., -5.));
         MVMatrix     = viewMatrix * MVMatrix;
         NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
-        lightScene.drawLightScene(glm::vec3(0., 0, 0.), ProjMatrix, viewMatrix, ShaderLight);
+        lightScene.drawLightScene(glm::vec3(0., 4, 2.), ProjMatrix, viewMatrix, ShaderLight);
         lightPerson.drawLightPerson(personCam.getPosition(), ProjMatrix, viewMatrix, ShaderLight);
 
         personCam.drawPerson(personModel, viewMatrix, ProjMatrix, ShaderLight, texturePerson);
+
+        int       uMVPMatrix    = glGetUniformLocation(ShaderLight.getShaderID(), "uMVPMatrix");
+        int       uMVMatrix     = glGetUniformLocation(ShaderLight.getShaderID(), "uMVMatrix");
+        int       uNormalMatrix = glGetUniformLocation(ShaderLight.getShaderID(), "uNormalMatrix");
+        glm::mat4 ProjMatrix    = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
+        glm::mat4 MVMatrix      = glm::translate(glm::mat4(1.f), glm::vec3(0, 0, 0));
+        glm::mat4 NormalMatrix  = glm::transpose(glm::inverse(MVMatrix));
+        // Envoyez les matrices au GPU
+        glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix));
+        glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
+        glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+        glDrawArrays(GL_TRIANGLES, 0, size(vertices));
+        glBindVertexArray(0);
 
         ShaderCube.use();
         cube.draw(glm::vec3(0., -5., -5.), glm::vec3{5.}, ShaderCube, viewMatrix, ProjMatrix);
@@ -199,9 +296,17 @@ int main()
         // Draw boids
         ShaderLight.use();
 
-        barque.draw(glm::vec3(0., -2., -5.), glm::vec3{1.}, ProjMatrix, viewMatrix, ShaderLight, textureBarque);
+        barque.draw(glm::vec3(2., -4., -8.), glm::vec3{1.}, ProjMatrix, viewMatrix, ShaderLight, textureBarque);
 
-        ocean.draw(glm::vec3(0., -5., 0.), glm::vec3{5.}, ProjMatrix, viewMatrix, ShaderLight, textureOcean);
+        ocean.draw(glm::vec3(0., -5., -1.), glm::vec3{5.}, ProjMatrix, viewMatrix, ShaderLight, textureOcean);
+
+        ile.draw(glm::vec3(-4., -5.5, -1.), glm::vec3{0.2}, ProjMatrix, viewMatrix, ShaderLight, textureIle);
+
+        trees.draw(glm::vec3(-2.5, -4., -3.), glm::vec3{0.2}, ProjMatrix, viewMatrix, ShaderLight, textureTrees);
+
+        pirate.draw(glm::vec3(3.5, -5., -4.), glm::vec3{0.3}, ProjMatrix, viewMatrix, ShaderLight, pirateTexture);
+
+        cloud.draw(glm::vec3(0., 2., 0.), glm::vec3{4.0}, ProjMatrix, viewMatrix, ShaderLight, textureCloud);
 
         for (auto& boid : boids)
         {
@@ -217,6 +322,10 @@ int main()
     personModel.~Model();
     barque.~Model();
     ocean.~Model();
+    ile.~Model();
+    trees.~Model();
+    pirate.~Model();
+    cloud.~Model();
 
     cube.~Cube();
 
@@ -227,6 +336,10 @@ int main()
     // glDeleteTextures(1, &texturePerson);
     glDeleteTextures(1, &textureBarque);
     glDeleteTextures(1, &textureOcean);
+    glDeleteTextures(1, &textureIle);
+    glDeleteTextures(1, &textureTrees);
+    glDeleteTextures(1, &pirateTexture);
+    glDeleteTextures(1, &textureCloud);
 
     return 0;
 }
