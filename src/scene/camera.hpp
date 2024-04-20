@@ -21,7 +21,7 @@ public:
     // Fonction pour mettre à jour la vue de la caméra en fonction de la position et de l'orientation du personnage
     void getViewMatrix(glm::mat4& ViewMatrix)
     {
-        glm::mat4 modelRotationMatrix = glm::rotate(glm::mat4(50.0f), m_target.getRotationAngle(), glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 modelRotationMatrix = glm::rotate(glm::mat4(45.0f), m_target.getRotationAngle(), glm::vec3(0.0f, 1.0f, 0.0f));
         // Calcul de la position de la caméra en fonction de la viewMatrix du jouesur
         glm::mat4 invPlayerViewMatrix = glm::inverse(ViewMatrix);
         auto      playerPos           = glm::vec3(invPlayerViewMatrix[3]);

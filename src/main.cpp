@@ -45,6 +45,8 @@ int main()
 
     LoadShader ShaderCube("shaders/3D.vs.glsl", "shaders/text2D.fs.glsl");
 
+    LoadShader ShaderSphere("shaders/3D.vs.glsl", "shaders/normals.fs.glsl");
+
     // Load texture
     img::Image img_ladybug = p6::load_image_buffer("assets/textures/dragonfly.png");
     img::Image img_person  = p6::load_image_buffer("assets/textures/titan.png");
@@ -77,6 +79,11 @@ int main()
     ShaderCube.addUniformVariable("uMVMatrix");
     ShaderCube.addUniformVariable("uNormalMatrix");
 
+    // recup variable uniforme
+    GLint uMVPMatrix    = glGetUniformLocation(ShaderSphere.getShaderID(), "uMVPMatrix");
+    GLint uMVMatrix     = glGetUniformLocation(ShaderSphere.getShaderID(), "uMVMatrix");
+    GLint uNormalMatrix = glGetUniformLocation(ShaderSphere.getShaderID(), "uNormalMatrix");
+
     Model ladybug = Model();
     ladybug.loadModel("dragonfly.obj");
     Model personModel = Model();
@@ -92,7 +99,7 @@ int main()
     Model pirate = Model();
     pirate.loadModel("pirate.obj");
     Model cloud = Model();
-    cloud.loadModel("cloud.obj");
+    cloud.loadModel("Wasp.obj");
 
     // Initialisation de la texture
     GLuint textureLadybug;
@@ -169,12 +176,10 @@ int main()
 
     // sphere
 
-    
-
     VBO vbo;
     vbo.bind();
 
-    std::vector<glimac::ShapeVertex> vertices = glimac::sphere_vertices(1, 32, 16);
+    std::vector<glimac::ShapeVertex> vertices = glimac::sphere_vertices(0.5, 32, 16);
     vbo.setData(vertices.data(), vertices.size() * sizeof(glimac::ShapeVertex));
     vbo.unbind();
     VAO vao;
@@ -225,19 +230,19 @@ int main()
 
     // camera
 
-    Person    personCam;
-    Camera    camera(personCam, personModel);
-    bool      right          = false;
-    bool      left           = false;
-    bool      up             = false;
-    bool      down           = false;
-    glm::vec3 personPosition = personCam.getPosition();
+    Person personCam;
+    Camera camera(personCam, personModel);
+    bool   right = false;
+    bool   left  = false;
+    bool   up    = false;
+    bool   down  = false;
+    // glm::vec3 personPosition = personCam.getPosition();
 
     // light
 
     Light lightScene = Light(glm::vec3{100});
 
-    Light lightPerson = Light(glm::vec3{0.1});
+    Light lightPerson = Light(glm::vec3{0.2});
 
     /* Loop until the user closes the window */
     ctx.update = [&]() {
@@ -255,7 +260,6 @@ int main()
 
         glClearColor(0.2f, 0.2f, 0.2f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        vao.bind();
 
         MVMatrix     = glm::translate(glm::mat4(1.0), glm::vec3(0., -10., -5.));
         MVMatrix     = viewMatrix * MVMatrix;
@@ -266,18 +270,21 @@ int main()
 
         personCam.drawPerson(personModel, viewMatrix, ProjMatrix, ShaderLight, texturePerson);
 
-        int       uMVPMatrix    = glGetUniformLocation(ShaderLight.getShaderID(), "uMVPMatrix");
-        int       uMVMatrix     = glGetUniformLocation(ShaderLight.getShaderID(), "uMVMatrix");
-        int       uNormalMatrix = glGetUniformLocation(ShaderLight.getShaderID(), "uNormalMatrix");
-        glm::mat4 ProjMatrix    = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
-        glm::mat4 MVMatrix      = glm::translate(glm::mat4(1.f), glm::vec3(0, 0, 0));
-        glm::mat4 NormalMatrix  = glm::transpose(glm::inverse(MVMatrix));
-        // Envoyez les matrices au GPU
-        glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix));
+        ShaderSphere.use();
+
+        vao.bind();
+
+        MVMatrix     = glm::translate(glm::mat4(1.0), glm::vec3(2., 1., -5.));
+        MVMatrix     = glm::rotate(MVMatrix, -ctx.time(), glm::vec3(0, 1, 0));
+        NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
+
+        // application de mes matrice dans les shaders
+        glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
         glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
         glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
-        glDrawArrays(GL_TRIANGLES, 0, size(vertices));
-        glBindVertexArray(0);
+
+        glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+        vao.unbind();
 
         ShaderCube.use();
         cube.draw(glm::vec3(0., -5., -5.), glm::vec3{5.}, ShaderCube, viewMatrix, ProjMatrix);
@@ -306,7 +313,7 @@ int main()
 
         pirate.draw(glm::vec3(3.5, -5., -4.), glm::vec3{0.3}, ProjMatrix, viewMatrix, ShaderLight, pirateTexture);
 
-        cloud.draw(glm::vec3(0., 2., 0.), glm::vec3{4.0}, ProjMatrix, viewMatrix, ShaderLight, textureCloud);
+        cloud.draw(glm::vec3(0., 2., -4.), glm::vec3{0.1}, ProjMatrix, viewMatrix, ShaderLight, textureCloud);
 
         for (auto& boid : boids)
         {

@@ -17,12 +17,12 @@ glm::vec3 Person::getPosition()
 
 float Person::getRotationAngle() const
 {
-    return m_RotationAngle; // Remplacez m_RotationAngle par la variable ou la valeur appropriée contenant l'angle de rotation de votre modèle
+    return m_RotationAngle;
 }
 
 void Person::setRotationAngle(float rotationAngle)
 {
-    m_RotationAngle = rotationAngle; // Remplacez m_RotationAngle par la variable ou la valeur appropriée contenant l'angle de rotation de votre modèle
+    m_RotationAngle = rotationAngle;
 }
 
 Person::Person()

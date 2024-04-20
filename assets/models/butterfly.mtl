@@ -1,0 +1,82 @@
+# Blender 3.6.2 MTL File: 'butterfly.blend'
+# www.blender.org
+
+newmtl Butterfly_Wings
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd C:/wing_albedo.jpg
+map_Ks C:/wing_specular.jpg
+map_Ns C:/wing_roughness.jpg
+map_d C:/wing_alpha.jpg
+
+newmtl abdomen
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/body_albedo.jpg
+map_Ks C:/body_specular.jpg
+map_Ns C:/body_roughness.jpg
+
+newmtl antenna
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/body_albedo.jpg
+map_Ks C:/body_specular.jpg
+map_Ns C:/body_roughness.jpg
+
+newmtl eyes
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/body_albedo.png
+map_Ks C:/body_specular.png
+map_Ns C:/body_roughness.png
+
+newmtl head
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/body_albedo.jpg
+map_Ks C:/body_specular.jpg
+map_Ns C:/body_roughness.jpg
+
+newmtl joint
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/body_albedo.jpg
+map_Ks C:/body_specular.jpg
+map_Ns C:/body_roughness.jpg
+
+newmtl legs
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.004896 0.004896 0.004896
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl thorax
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/body_albedo.jpg
+map_Ks C:/body_specular.jpg
+map_Ns C:/body_roughness.jpg
