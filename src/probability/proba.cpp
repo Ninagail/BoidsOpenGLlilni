@@ -1,198 +1,201 @@
-// #include "proba.hpp"
-// #include <cmath>
-// #include <cstdlib>
-// #include "elementdecor.hpp"
+#include "proba.hpp"
+#include <cmath>
+#include <cstdlib>
+#include <glm/glm.hpp>
+#include <iostream>
 
-// // Note à moi meme : verifier si tout les points du sujet peuvent etre verifies avec ces lois là
+// Fonction de génération de nombres aléatoires dans l'intervalle [0, 1]
+double RAND()
+{
+    return ((double)rand() / (double)RAND_MAX);
+}
 
-// // Fonction de génération de nombres aléatoires dans l'intervalle [0, 1]
-// double RAND()
-// {
-//     return ((double)rand() / (double)RAND_MAX);
-// }
+/******************************************************************************************************************************/
 
-// // Fonction de densité de probabilité de la LOI DE LAPLACE (Probability Density Function) --> pas utile ici car on se base sur la fonction de répartition inversée et non directement sur Laplace
-// /*double laplacePDF(double x, double mu, double b)
-// {
-//     return (1.0 / (2.0 * b)) * exp(-std::abs(x - mu) / b);
-// }*/
+// LOI DE CAUCHY : vent qui provoque un leger décalement de la barque
 
-// // Fonction pour simuler les variations de couleur des coccinelles en fonction du temps
-// // Il faudra verifier si cela suit strictement Laplace ou non
-// // mu : moyenne de la loi de Laplace
-// // b : paramètre de forme de la loi de Laplace
-// // time : temps auquel la couleur est évaluée
-// double simulateColorVariation(double mu, double b, double time)
-// {
-//     // Génération d'un échantillon de la loi de Laplace
-//     double laplaceSample = mu - b * log(1.0 - RAND());
+bool cauchy_move_probability(double location, double scale)
+{
+    // Générer un nombre aléatoire entre 0 et 1
+    double random_value = rand() / double(RAND_MAX);
 
-//     // Ajustement de l'échantillon en fonction du temps (peut être modifié en fonction de votre scénario)
-//     return laplaceSample * sin(time); // Exemple simple de variation de couleur en fonction du temps
-// }
+    // Utiliser la loi de Cauchy pour calculer la probabilité de mouvement
+    double cauchy_probability =
+        1.0 / (1.0 + pow((random_value - 0.5) / scale, 2));
 
-// /******************************************************************************************************************************/
+    // Comparer la probabilité générée avec la probabilité de mouvement
+    return random_value < cauchy_probability;
+}
 
-// // LOI DE PARETO : taille des éléments de décors
+/******************************************************************************************************************************/
+// LOI DE LAPLACE : changement de couleur du soleil
 
-// // alpha : paramètre de forme de la loi de Pareto
-// // x_min : taille minimale des éléments de décors
-// double simulateDecorSize(double alpha, double x_min)
-// {
-//     // Génération d'un échantillon de la loi de Pareto
-//     return x_min / pow(RAND(), 1.0 / alpha) - x_min;
-// }
+bool laplace_color_probability(double mu, double b)
+{
+    // Générer un échantillon aléatoire selon la loi de Laplace
+    double beta          = 1.0 / b;                                                    // Calculer le paramètre beta
+    double u1            = rand() / (RAND_MAX + 1.0);                                  // Générer un nombre aléatoire uniforme dans [0, 1]
+    double laplaceSample = beta * (u1 < 0.5 ? log(2.0 * u1) : -log(2.0 * (1.0 - u1))); // Appliquer la transformation inverse de la distribution de Laplace
 
-// // Idée de comment l'integrer dans le code
+    // Déterminer si la sphère doit changer de couleur en fonction de la probabilité
+    bool change_color = (laplaceSample < mu);
 
-// /*// Paramètres de la loi de Pareto pour la taille des éléments de décors
-// double alpha = 2.0; // Paramètre de forme de la loi de Pareto
-// double x_min = 1.0; // Taille minimale des éléments de décors
+    // Afficher un message de débogage indiquant la couleur de la sphère
+    if (change_color)
+    {
+        std::cout << "La sphere devient rouge." << std::endl;
+    }
+    else
+    {
+        std::cout << "La sphere reste jaune." << std::endl;
+    }
 
-// // Simulation de la taille d'un élément de décor
-// double tailleElementDecor = simulateDecorSize(alpha, x_min);
+    return change_color;
+}
 
-// // Création de l'objet décor avec la taille simulée
-// Decor monElementDecor;
-// monElementDecor.taille = tailleElementDecor;
-// */
+/******************************************************************************************************************************/
 
-// /******************************************************************************************************************************/
+// LOI DE PARETO : taille des iles
 
-// // LOI DE CAUCHY : vent / leger décalement d'un element de décor
+double generate_island_size(double alpha, double xmin, double xmax)
+{
+    double u = RAND(); // Générer un nombre aléatoire uniforme dans l'intervalle [0, 1]
 
-// // Fonction pour générer des valeurs selon la loi de Cauchy
-// double cauchy_distribution(double location, double scale)
-// {
-//     double u1 = RAND() * 2.0 - 1.0; // Génère un nombre aléatoire entre -1 et 1
-//     double u2 = RAND() * 2.0 - 1.0; // Génère un autre nombre aléatoire entre -1 et 1
+    // Appliquer la transformation inverse de Pareto
+    double island_size = xmin * pow(1.0 / u - 1.0, 1.0 / alpha);
 
-//     // Utilise la méthode de Box-Muller pour générer une distribution normale
-//     double z = sqrt(-2.0 * log(u1)) * cos(2.0 * 3.1415 * u2);
+    // Assurer que la taille de l'île est dans la plage [xmin, xmax]
+    island_size = std::max(xmin, std::min(xmax, island_size));
 
-//     // Applique la localisation et l'échelle pour obtenir la distribution de Cauchy
-//     return location + scale * z;
-// }
+    std::cout << "Taille de l'ile : " << island_size << std::endl;
 
-// // Fonction pour appliquer les rafales de vent à un élément de décor
-// void appliquer_rafale_vent(ElementDecor& element_decor, double location, double scale)
-// {
-//     // Générer des déplacements aléatoires pour l'élément de décor
-//     double deplacement_x = cauchy_distribution(location, scale);
-//     double deplacement_y = cauchy_distribution(location, scale);
-//     double deplacement_z = cauchy_distribution(location, scale);
-
-//     // Appliquer les déplacements à l'élément de décor
-//     element_decor.move(deplacement_x, deplacement_y, deplacement_z);
-// }
+    return island_size;
+}
 
 // /******************************************************************************************************************************/
 
-// // LOI GEOMETIQUE : apparition de nouveaux éléments de décor
+// LOI GEOMETIQUE : apparition de nouvelles îles
 
-// // Faudra créer une classe element de décor qui contient ces fonctions
-// // Pour cette loi je ne suis pas encore sur de comment l'appliquer dans notre code sans que cela fausse la loi de proba géométrique
+int geometric_distribution(double p)
+{
+    double u          = RAND(); // Génère un nombre aléatoire entre 0 et 1
+    int    n          = 0;
+    double cumulative = 0.0;
+    while (cumulative < 1.0)
+    {
+        cumulative += p * pow((1.0 - p), n);
+        if (u <= cumulative)
+        {
+            // Retourner le nombre d'îles (au moins une île), limité entre 1 et 5 îles maximum
+            return std::min(n + 1, 5);
+        }
+        n++;
+    }
+    // Si la boucle se termine sans retourner, cela signifie qu'aucune île n'a été générée
+    return 0;
+}
 
-// // Fonction pour générer des valeurs selon la loi géométrique
-// int geometric_distribution(double p)
-// {
-//     double u = RAND(); // Génère un nombre aléatoire entre 0 et 1
-//     return ceil(log(1.0 - u) / log(1.0 - p));
-// }
+/******************************************************************************************************************************/
 
-// // Fonction pour déterminer si un nouvel élément de décor apparaît selon la loi géométrique
-// bool nouvel_element_decor_apparait(double p)
-// {
-//     int n = geometric_distribution(p);
-//     return (n == 1); // Retourne vrai si n est égal à 1 (nouvel élément de décor apparaît)
-// }
+// LOI DE POISSON : probabilite qu'une têmpete survienne ce qui entraine la montée de l'océan
 
-// /******************************************************************************************************************************/
+int poisson(double lambda)
+{
+    if (lambda == 0.0)
+        return 0;
 
-// // LOI DE POISSON : probabilite de disparition des éléments de décors
-// // Pour cette loi je ne suis pas encore sur de comment l'appliquer dans notre code sans que cela fausse la loi de poisson
+    double L = std::exp(-lambda);
+    double p = 1.0;
+    int    k = 0;
 
-// // Fonction pour générer des valeurs selon la loi de Poisson
-// int poisson_distribution(double lambda)
-// {
-//     double L = exp(-lambda);
-//     double p = 1.0;
-//     int    k = 0;
+    while (p >= L)
+    {
+        p *= RAND();
+        k++;
+    }
 
-//     do
-//     {
-//         k++;
-//         p *= RAND(); // Utilisez votre fonction de génération de nombres aléatoires
-//     } while (p > L);
+    return k - 1;
+}
 
-//     return k - 1;
-// }
+bool storm_occurs(double lambda, double random_value)
+{
+    // Générer un nombre aléatoire selon la loi de Poisson avec le paramètre lambda
+    int poisson_value = poisson(lambda);
 
-// // Fonction pour déterminer si un élément de décor doit disparaître selon la loi de Poisson
-// bool element_decor_disparait(double lambda)
-// {
-//     int n = poisson_distribution(lambda);
-//     return (n > 0); // Retourne vrai si n est supérieur à 0 (élément de décor disparaît)
-// }
+    // Déterminer un seuil en fonction de lambda
+    double threshold = lambda * random_value;
 
-// /******************************************************************************************************************************/
+    // Si la valeur de la distribution de Poisson dépasse le seuil, une tempête se produit
+    return poisson_value > threshold;
+}
 
-// // LOI BINOMIALE : probabilité qu'une tempete survienne (et donc fasse tomber des elements de décors)
+/******************************************************************************************************************************/
+// LOI UNIFORME : bateau pirate présent ou non dans la scene
 
-// // Fonction pour générer une variable aléatoire selon une loi binomiale
-// // n : nombre d'essais
-// // p : probabilité de succès pour chaque essai
-// int binomialDistribution(int n, double p)
-// {
-//     int x = 0;
-//     for (int i = 0; i < n; ++i)
-//     {
-//         if (RAND() < p)
-//         { // Utilisation de la fonction RAND() pour générer un nombre aléatoire entre 0 et 1
-//             x++;
-//         }
-//     }
-//     return x;
-// }
+//  Fonction pour simuler une loi uniforme (50% de chance que le bateau pirate soit là)
 
-// // Fonction pour simuler l'impact d'une tempête sur les éléments de décors
-// // probaTempete : probabilité qu'une tempête survienne
-// // seuil : nombre de succès nécessaires pour déclencher la tempête
-// // impact : nombre d'éléments de décors affectés par la tempête
-// int simulerTempete(double probaTempete, int seuil, int impact)
-// {
-//     int essais = 1; // Nombre d'essais pour la simulation de la tempête (1 seul essai pour la probabilité) : je ne sais pas trop si 1 est le bon chiffre
-//     int succes = binomialDistribution(essais, probaTempete);
-//     if (succes >= seuil)
-//     {
-//         return impact; // La tempête a un impact sur les éléments de décors (à voir comment coder l'impact)
-//     }
-//     else
-//     {
-//         return 0; // Pas de tempête, aucun impact sur les éléments de décors
-//     }
-// }
+char random_letter_uniform()
+{
+    int         index    = rand() % 26;
+    const char* alphabet = "abcdefghijklmnopqrstuvwxyz";
+    char        letter   = alphabet[index];
 
-// /******************************************************************************************************************************/
+    if (index < 13)
+    {
+        std::cout << "Bateau pirate : Absent" << std::endl;
+        return 'a';
+    }
+    else
+    {
+        std::cout << "Bateau pirate : Present" << std::endl;
+        return 'p';
+    }
+}
 
-// // LOI LOGISTIQUE : mortalité des coccinnelles
+/******************************************************************************************************************************/
+// LOI GAMMA : définie la taille de l'arbre
 
-// // Fonction pour calculer le taux de mortalité des coccinelles en suivant une loi logistique
-// // Paramètres :
-// // - tauxMortInitial : Taux initial de mortalité
-// // - croissance : Taux de croissance de la mortalité
-// // - capacite : Capacité maximale de mortalité
-// // - temps : Temps auquel évaluer le taux de mortalité
-// // Retourne :
-// // - Le taux de mortalité calculé en suivant la loi logistique
-// double calculerTauxMortaliteLogistique(double tauxMortInitial, double croissance, double capacite, double temps)
-// {
-//     // Calcul de l'exponentiel de la croissance multipliée par le temps
-//     double exponentiel = exp(croissance * temps);
+double taille_arbre_gamma(double k, double theta, double taille_min, double taille_max)
+{
+    double d, c, x, v, u;
 
-//     // Calcul du taux de mortalité en utilisant la formule de la loi logistique
-//     double tauxMortalite = capacite / (1 + exponentiel);
+    if (k < 1.0)
+    {
+        do
+        {
+            u = RAND();
+            v = RAND();
+            x = pow(u, 1.0 / k);
+            c = theta * (exp(1.0) / k);
+            d = v * pow(x, k - 1.0);
+        } while (d > exp(-x) || x * theta < taille_min || x * theta > taille_max);
+    }
+    else
+    {
+        do
+        {
+            u = RAND();
+            v = RAND();
+            x = -log(u);
+            v = v * pow(x, k - 1.0);
+            d = v - exp(-x);
+        } while (d > 0.0 || x * theta < taille_min || x * theta > taille_max);
+    }
 
-//     // Retourne le taux de mortalité calculé
-//     return tauxMortalite;
-// }
+    std::cout << "Taille arbre : " << theta * x << std::endl;
+
+    return theta * x;
+}
+
+/******************************************************************************************************************************/
+// LOI LOGISTIQUE :
+
+int nombre_boids_initial(double L, double q, double x0)
+{
+    double x = RAND(); // Générer un nombre aléatoire entre 0 et 1
+    // Calculer la fonction logistique
+    double proba_logistique = L / (1 + exp(-q * (x - x0)));
+    // Utiliser la probabilité pour déterminer le nombre de boids
+    int nombre_boids = (int)(proba_logistique * 100); // Multiplier par 100 pour obtenir un nombre entier
+    return nombre_boids;
+}

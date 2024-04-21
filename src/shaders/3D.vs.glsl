@@ -17,12 +17,12 @@ void main() {
     //Passage en coord homogènes
     vec4 vertexPosition = vec4(aVertexPosition, 1);
     vec4 vertexNormal = vec4(aVertexNormal, 1);
-    
+
     //calcul valeur de sortie
 
     vPosition_vs = vec3(uMVMatrix * vertexPosition);
     vNormal_vs = vec3(uNormalMatrix * vertexNormal);
     vTexCoords = aVertexTexCoords;
-    
+
     gl_Position = uMVPMatrix * vertexPosition;
 }
