@@ -1,30 +1,16 @@
 #include "proba.hpp"
+#include <chrono>
 #include <cmath>
 #include <cstdlib>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <thread>
+#include <vector>
 
 // Fonction de génération de nombres aléatoires dans l'intervalle [0, 1]
 double RAND()
 {
     return ((double)rand() / (double)RAND_MAX);
-}
-
-/******************************************************************************************************************************/
-
-// LOI DE CAUCHY : vent qui provoque un leger décalement de la barque
-
-bool cauchy_move_probability(double location, double scale)
-{
-    // Générer un nombre aléatoire entre 0 et 1
-    double random_value = rand() / double(RAND_MAX);
-
-    // Utiliser la loi de Cauchy pour calculer la probabilité de mouvement
-    double cauchy_probability =
-        1.0 / (1.0 + pow((random_value - 0.5) / scale, 2));
-
-    // Comparer la probabilité générée avec la probabilité de mouvement
-    return random_value < cauchy_probability;
 }
 
 /******************************************************************************************************************************/
@@ -34,7 +20,7 @@ bool laplace_color_probability(double mu, double b)
 {
     // Générer un échantillon aléatoire selon la loi de Laplace
     double beta          = 1.0 / b;                                                    // Calculer le paramètre beta
-    double u1            = rand() / (RAND_MAX + 1.0);                                  // Générer un nombre aléatoire uniforme dans [0, 1]
+    double u1            = RAND();                                                     // Générer un nombre aléatoire uniforme dans [0, 1]
     double laplaceSample = beta * (u1 < 0.5 ? log(2.0 * u1) : -log(2.0 * (1.0 - u1))); // Appliquer la transformation inverse de la distribution de Laplace
 
     // Déterminer si la sphère doit changer de couleur en fonction de la probabilité
@@ -132,22 +118,26 @@ bool storm_occurs(double lambda, double random_value)
 /******************************************************************************************************************************/
 // LOI UNIFORME : bateau pirate présent ou non dans la scene
 
-//  Fonction pour simuler une loi uniforme (50% de chance que le bateau pirate soit là)
+//  Fonction pour simuler une loi uniforme (50% de chance que l'arbre soit là)
 
 char random_letter_uniform()
 {
-    int         index    = rand() % 26;
+    double random_value = RAND();
+
+    int index = static_cast<int>(random_value * 26); // Calculer l'index en multipliant la valeur aléatoire par 26
+
     const char* alphabet = "abcdefghijklmnopqrstuvwxyz";
     char        letter   = alphabet[index];
 
+    // Afficher l'état de l'arbre en fonction de l'index
     if (index < 13)
     {
-        std::cout << "Bateau pirate : Absent" << std::endl;
+        std::cout << "Arbre : Absent" << std::endl;
         return 'a';
     }
     else
     {
-        std::cout << "Bateau pirate : Present" << std::endl;
+        std::cout << "Arbre : Present" << std::endl;
         return 'p';
     }
 }
@@ -190,12 +180,36 @@ double taille_arbre_gamma(double k, double theta, double taille_min, double tail
 /******************************************************************************************************************************/
 // LOI LOGISTIQUE :
 
-int nombre_boids_initial(double L, double q, double x0)
+// int nombre_boids_initial(double L, double q, double x0)
+// {
+//     double x = RAND(); // Générer un nombre aléatoire entre 0 et 1
+//     // Calculer la fonction logistique
+//     double proba_logistique = L / (1 + exp(-q * (x - x0)));
+//     // Utiliser la probabilité pour déterminer le nombre de boids
+//     int nombre_boids = (int)(proba_logistique * 100); // Multiplier par 100 pour obtenir un nombre entier
+//     return nombre_boids;
+// }
+
+/******************************************************************************************************************************/
+// MARKOV :
+
+MarkovChain::MarkovChain(std::vector<std::vector<double>> matrix, std::vector<int> states)
+    : transitionMatrix(matrix), states(states) {}
+
+int MarkovChain::nextState(int currentState)
 {
-    double x = RAND(); // Générer un nombre aléatoire entre 0 et 1
-    // Calculer la fonction logistique
-    double proba_logistique = L / (1 + exp(-q * (x - x0)));
-    // Utiliser la probabilité pour déterminer le nombre de boids
-    int nombre_boids = (int)(proba_logistique * 100); // Multiplier par 100 pour obtenir un nombre entier
-    return nombre_boids;
+    double randomValue = RAND();
+
+    // Trouver l'état suivant en fonction des probabilités de transition
+    double cumulativeProbability = 0.0;
+    for (int nextState = 0; nextState < states.size(); ++nextState)
+    {
+        cumulativeProbability += transitionMatrix[currentState][nextState];
+        if (randomValue < cumulativeProbability)
+        {
+            return states[nextState];
+        }
+    }
+    // Si aucune transition n'est trouvée, rester dans l'état actuel
+    return currentState;
 }

@@ -1,5 +1,7 @@
+#include <chrono>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <thread>
 #include <vector>
 #include "../src/model/model.hpp"
 #include "../src/person/person.hpp"
@@ -41,15 +43,6 @@ void raise_ocean_level()
     }
 }
 
-// CAUCHY
-glm::vec3 barque_position = glm::vec3(2., -4., -8.);
-
-// LOGISTIQUE
-// double L  = 75.0;
-// double q  = 0.1;
-// double x0 = 0.5;
-// int nbr_boids = nombre_boids_initial(L, q, x0);
-
 int main()
 {
     auto ctx = p6::Context{{window_width, window_height, "Boids"}};
@@ -59,7 +52,6 @@ int main()
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
 
-    // std::vector<Boids> boids(nbr_boids);
     std::vector<Boids> boids(75);
     for (auto& boid : boids)
     {
@@ -261,30 +253,13 @@ int main()
 
     // POISSON
 
-    srand(time(0)); // A verifier qi on a le droit d'utiliser ça
+    srand(time(0));
 
     double random_value = (double)rand() / RAND_MAX;
     double lambda       = 0.6; // lambda = 0.6 --> Tempête = OUI 45.12% du temps
     bool   stormHandled = false;
     bool   storm        = storm_occurs(lambda, random_value);
     std::cout << "Tempete : " << (storm ? "Oui" : "Non") << std::endl;
-
-    // CAUCHY
-    const double location_barque = 0.0; // Position centrale de la distribution de Cauchy
-    const double scale_barque    = 1.0; // Échelle de la distribution de Cauchy
-
-    if (cauchy_move_probability(location_barque, scale_barque))
-    {
-        // La barque se déplace
-        std::cout << "La barque se deplace." << std::endl;
-        barque_position.x += 1.0f;
-    }
-    else
-    {
-        // La barque ne se déplace pas
-        std::cout << "La barque ne se deplace pas." << std::endl;
-        barque_position = barque_position;
-    }
 
     // LAPLACE
     double mu = 0.7;
@@ -318,7 +293,7 @@ int main()
 
     // UNIFORME
     //  Vérifier si le bateau pirate est présent avec une loi uniforme
-    char pirate_present = random_letter_uniform();
+    char tree_present = random_letter_uniform();
 
     // GAMMA
     double    theta      = 1;
@@ -327,6 +302,42 @@ int main()
     double    taille_max = 0.23;
     double    tree_size  = taille_arbre_gamma(k, theta, taille_min, taille_max);
     glm::vec3 tree_scale(tree_size);
+
+    // MARKOV
+
+    glm::vec3 piratePresentPosition = glm::vec3(3.5, -5., -5.0);
+    glm::vec3 pirateAbsentPosition  = glm::vec3(-1000.0f); // Hors de la vue
+
+    // Définir les positions pour les différents états de la barque
+    glm::vec3 boatMovingPosition     = glm::vec3(3.0, -4., -8.);
+    glm::vec3 boatStationaryPosition = glm::vec3(2., -4., -8.);
+
+    // Définir les états possibles pour le pirate et la barque
+    std::vector<int> pirateStates = {static_cast<int>(PirateState::Present), static_cast<int>(PirateState::Absent)};
+    std::vector<int> boatStates   = {static_cast<int>(BoatState::Moving), static_cast<int>(BoatState::Stationary)};
+
+    // Définir la matrice de transition pour la chaîne de Markov
+    std::vector<std::vector<double>> transitionMatrix{
+
+        {0.8, 0.2, 0.0, 0.0}, // (P, M) : Pirate présent, Barque en mouvement
+
+        {0.5, 0.5, 0.0, 0.0}, // (P, I) : Pirate présent, Barque immobile
+
+        {0.0, 0.0, 0.9, 0.1}, // (A, M) : Pirate absent, Barque en mouvement
+
+        {0.0, 0.3, 0.7, 0.0} // (A, I) : Pirate absent, Barque immobile
+    };
+
+    // Créer une instance de la classe MarkovChain
+    MarkovChain markovChain(transitionMatrix, pirateStates);
+
+    // État initial : Pirate présent et Barque en mouvement
+    int       currentPirateState = static_cast<int>(PirateState::Present);
+    int       currentBoatState   = static_cast<int>(BoatState::Moving);
+    glm::vec3 piratePosition;
+    glm::vec3 barquePosition;
+    const int updateFrequency = 20; // Mise à jour de l'état toutes les 10 itérations
+    int       updateCounter   = 0;  // Initialisation du compteur
 
     /* Loop until the user closes the window */
     ctx.update = [&]() {
@@ -398,10 +409,7 @@ int main()
 
         ImGui::End();
 
-        // Draw boids
         ShaderLight.use();
-
-        barque.draw(barque_position, glm::vec3{1.}, ProjMatrix, viewMatrix, ShaderLight, textureBarque);
 
         // Update the scene according to storm
         if (storm)
@@ -419,16 +427,50 @@ int main()
             }
         }
 
-        trees.draw(glm::vec3(-2.5, -4., -3.5), tree_scale, ProjMatrix, viewMatrix, ShaderLight, textureTrees);
-
-        if (pirate_present == 'a')
+        if (tree_present == 'a')
         {
         }
-        else if (pirate_present == 'p')
+        else if (tree_present == 'p')
         {
-            pirate.draw(glm::vec3(3.5, -5., -5.0), glm::vec3{0.3}, ProjMatrix, viewMatrix, ShaderLight, pirateTexture);
+            trees.draw(glm::vec3(-2.5, oceanPosition.y, -3.5), tree_scale, ProjMatrix, viewMatrix, ShaderLight, textureTrees);
         }
 
+        updateCounter++;
+        // Vérifier si le compteur a atteint la fréquence de mise à jour désirée
+        if (updateCounter >= updateFrequency)
+        {
+            // Mettre à jour les états du pirate et de la barque
+            currentPirateState = markovChain.nextState(currentPirateState);
+            currentBoatState   = markovChain.nextState(currentBoatState);
+
+            // Mettre à jour les positions du pirate et de la barque en fonction de leurs états
+            if (currentPirateState == static_cast<int>(PirateState::Present))
+            {
+                piratePosition = piratePresentPosition;
+            }
+            else
+            {
+                piratePosition = pirateAbsentPosition;
+            }
+
+            if (currentBoatState == static_cast<int>(BoatState::Moving))
+            {
+                barquePosition = boatMovingPosition;
+            }
+            else
+            {
+                barquePosition = boatStationaryPosition;
+            }
+
+            // Réinitialiser le compteur
+            updateCounter = 0;
+        }
+
+        // Dessiner la barque et le pirate avec les positions appropriées
+        barque.draw(barquePosition, glm::vec3{1.}, ProjMatrix, viewMatrix, ShaderLight, textureBarque);
+        pirate.draw(piratePosition, glm::vec3{0.3}, ProjMatrix, viewMatrix, ShaderLight, pirateTexture);
+
+        // Draw boids
         for (auto& boid : boids)
         {
             boid.drawBoids3D(ladybug, ProjMatrix, NormalMatrix, viewMatrix, ShaderLight, textureLadybug);
