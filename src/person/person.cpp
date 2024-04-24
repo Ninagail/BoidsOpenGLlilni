@@ -75,11 +75,11 @@ void cameraOption(Person& person, bool& left, bool& right, bool& up, bool& down,
 {
     if (right)
     {
-        person.rotateLeft(-0.5f);
+        person.moveLeft(-0.05f);
     }
     if (left)
     {
-        person.rotateLeft(+0.5f);
+        person.moveLeft(+0.05f);
     }
     if (up)
     {
