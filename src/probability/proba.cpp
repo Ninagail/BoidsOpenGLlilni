@@ -45,7 +45,7 @@ bool laplace_color_probability(double mu, double b)
 
 double generate_island_size(double alpha, double xmin, double xmax)
 {
-    double u = RAND(); // Générer un nombre aléatoire uniforme dans l'intervalle [0, 1]
+    double u = RAND();
 
     // Appliquer la transformation inverse de Pareto
     double island_size = xmin * pow(1.0 / u - 1.0, 1.0 / alpha);
@@ -62,14 +62,14 @@ double generate_island_size(double alpha, double xmin, double xmax)
 
 // LOI GEOMETIQUE : apparition de nouvelles îles
 
-int geometric_distribution(double p)
+int geometric_distribution(double q)
 {
     double u          = RAND(); // Génère un nombre aléatoire entre 0 et 1
     int    n          = 0;
     double cumulative = 0.0;
     while (cumulative < 1.0)
     {
-        cumulative += p * pow((1.0 - p), n);
+        cumulative += q * pow((1.0 - q), n);
         if (u <= cumulative)
         {
             // Retourner le nombre d'îles (au moins une île), limité entre 1 et 5 îles maximum
@@ -178,17 +178,23 @@ double taille_arbre_gamma(double k, double theta, double taille_min, double tail
 }
 
 /******************************************************************************************************************************/
-// LOI LOGISTIQUE :
+// LOI BINOMIALE :
 
-// int nombre_boids_initial(double L, double q, double x0)
-// {
-//     double x = RAND(); // Générer un nombre aléatoire entre 0 et 1
-//     // Calculer la fonction logistique
-//     double proba_logistique = L / (1 + exp(-q * (x - x0)));
-//     // Utiliser la probabilité pour déterminer le nombre de boids
-//     int nombre_boids = (int)(proba_logistique * 100); // Multiplier par 100 pour obtenir un nombre entier
-//     return nombre_boids;
-// }
+bool binomial(double p)
+{
+    double u = RAND(); // Générer un nombre aléatoire entre 0 et 1
+
+    if (u < p)
+    {
+        std::cout << "Jour" << std::endl;
+        return true;
+    }
+    else
+    {
+        std::cout << "Nuit" << std::endl;
+        return false;
+    }
+}
 
 /******************************************************************************************************************************/
 // MARKOV :

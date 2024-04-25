@@ -33,5 +33,6 @@ double    generate_island_size(double alpha, double xmin, double xmax);
 int       geometric_distribution(double p);
 char      random_letter_uniform();
 double    taille_arbre_gamma(double k, double theta, double taille_min, double taille_max);
+bool      binomial(double p);
 
 #endif
