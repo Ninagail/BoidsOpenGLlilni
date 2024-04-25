@@ -26,6 +26,7 @@
 
 const int window_width  = 1280;
 const int window_height = 720;
+bool      LODS          = false;
 
 // Fonctions et variables pour les mathematiques
 
@@ -412,7 +413,6 @@ int main()
         cube.draw(glm::vec3(0., -5., -5.), glm::vec3{5.}, ShaderCube, viewMatrix, ProjMatrix);
         cube.borders(personCam);
 
-        bool LODS = false;
         // Gui
         ImGui::Begin("Slider");
         ImGui::SliderFloat("CohesionForce", &Boids::cohesion_force, 0.f, 1.f);
@@ -422,7 +422,7 @@ int main()
         ImGui::SliderFloat("Distance to align", &Boids::distance_alignment, 0.f, 1.f);
         int intValue = LODS ? 1 : 0;
         ImGui::SliderInt("Option", &intValue, 0, 1);
-        LODS = (intValue == 1) ? true : false;
+        LODS = (intValue == 1);
         ImGui::End();
 
         ShaderLight.use();
@@ -498,12 +498,26 @@ int main()
         }
         else
         {
+            ShaderSphere.use();
+
+            vao.bind();
+
+            // Appliquer les transformations
+            // MVMatrix     = glm::translate(glm::mat4(1.0), glm::vec3(2., 1., -5.));
+            // MVMatrix     = glm::rotate(MVMatrix, -ctx.time(), glm::vec3(0, 1, 0));
+            // NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
+
+            // Passez les matrices au shader
+            // glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
+            // glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
+            // glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
             for (auto& boid : boids)
             {
                 boid.drawBoids3DSphere(vertices, textureLadybug, boids, ProjMatrix, MVMatrix, uMVPMatrix, uMVMatrix, uNormalMatrix, textureLadybug);
                 boid.update_pos();
                 boid.update_direction(boids);
             }
+            vao.unbind();
         }
     };
 
