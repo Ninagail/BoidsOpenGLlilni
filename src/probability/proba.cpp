@@ -19,8 +19,8 @@ double RAND()
 bool laplace_color_probability(double mu, double b)
 {
     // Générer un échantillon aléatoire selon la loi de Laplace
-    double beta          = 1.0 / b;                                                    // Calculer le paramètre beta
-    double u1            = RAND();                                                     // Générer un nombre aléatoire uniforme dans [0, 1]
+    double beta          = 1.0 / b;
+    double u1            = RAND();
     double laplaceSample = beta * (u1 < 0.5 ? log(2.0 * u1) : -log(2.0 * (1.0 - u1))); // Appliquer la transformation inverse de la distribution de Laplace
 
     // Déterminer si la sphère doit changer de couleur en fonction de la probabilité
@@ -116,7 +116,7 @@ bool storm_occurs(double lambda, double random_value)
 }
 
 /******************************************************************************************************************************/
-// LOI UNIFORME : bateau pirate présent ou non dans la scene
+// LOI UNIFORME : tree présent ou non dans la scene
 
 //  Fonction pour simuler une loi uniforme (50% de chance que l'arbre soit là)
 
@@ -182,7 +182,7 @@ double taille_arbre_gamma(double k, double theta, double taille_min, double tail
 
 bool binomial(double p)
 {
-    double u = RAND(); // Générer un nombre aléatoire entre 0 et 1
+    double u = RAND();
 
     if (u < p)
     {

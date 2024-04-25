@@ -269,8 +269,7 @@ int main()
     // LAPLACE
     double mu = 0.7;
     double b  = 0.1; // Paramètre d'échelle, peut être ajusté pour contrôler la dispersion des valeurs
-    // double    mu          = 0.99;
-    // double    b           = 0.05;
+
     glm::vec3 sphereColor = glm::vec3(1.0f, 1.0f, 0.0f); // Jaune
     bool      changeColor = laplace_color_probability(mu, b);
 
@@ -283,7 +282,7 @@ int main()
 
     // GEOMETRIQUE
 
-    const double q           = 0.25; // p est entre 0 et 1
+    const double q           = 0.25; // q est entre 0 et 1
     int          num_islands = geometric_distribution(q);
     std::cout << "Nombre d'iles' : " << num_islands << std::endl;
 
