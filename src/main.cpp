@@ -235,13 +235,13 @@ int main()
 
     // camera
 
-    Person personCam;
-    Camera camera(personCam, personModel);
-    bool   right = false;
-    bool   left  = false;
-    bool   up    = false;
-    bool   down  = false;
-    // glm::vec3 personPosition = personCam.getPosition();
+    Person    personCam;
+    Camera    camera(personCam, personModel);
+    bool      right          = false;
+    bool      left           = false;
+    bool      up             = false;
+    bool      down           = false;
+    glm::vec3 personPosition = personCam.getPosition();
 
     // light
 
@@ -399,6 +399,7 @@ int main()
         cube.draw(glm::vec3(0., -5., -5.), glm::vec3{5.}, ShaderCube, viewMatrix, ProjMatrix);
         cube.borders(personCam);
 
+        bool LODS = false;
         // Gui
         ImGui::Begin("Slider");
         ImGui::SliderFloat("CohesionForce", &Boids::cohesion_force, 0.f, 1.f);
@@ -406,7 +407,9 @@ int main()
         ImGui::SliderFloat("Distance to unite", &Boids::distance_cohesion, 0.f, 1.f);
         ImGui::SliderFloat("Distance to escape", &Boids::distance_separation, 0.f, 1.f);
         ImGui::SliderFloat("Distance to align", &Boids::distance_alignment, 0.f, 1.f);
-
+        int intValue = LODS ? 1 : 0;
+        ImGui::SliderInt("Option", &intValue, 0, 1);
+        LODS = (intValue == 1) ? true : false;
         ImGui::End();
 
         ShaderLight.use();
@@ -471,11 +474,23 @@ int main()
         pirate.draw(piratePosition, glm::vec3{0.3}, ProjMatrix, viewMatrix, ShaderLight, pirateTexture);
 
         // Draw boids
-        for (auto& boid : boids)
+        if (LODS == false)
         {
-            boid.drawBoids3D(ladybug, ProjMatrix, NormalMatrix, viewMatrix, ShaderLight, textureLadybug);
-            boid.update_pos();
-            boid.update_direction(boids);
+            for (auto& boid : boids)
+            {
+                boid.drawBoids3D(ladybug, ProjMatrix, NormalMatrix, viewMatrix, ShaderLight, textureLadybug);
+                boid.update_pos();
+                boid.update_direction(boids);
+            }
+        }
+        else
+        {
+            for (auto& boid : boids)
+            {
+                boid.drawBoids3DSphere(vertices, textureLadybug, boids, ProjMatrix, MVMatrix, uMVPMatrix, uMVMatrix, uNormalMatrix, textureLadybug);
+                boid.update_pos();
+                boid.update_direction(boids);
+            }
         }
     };
 
