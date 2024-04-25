@@ -29,10 +29,11 @@ bool      laplace_color_probability(double mu, double b);
 int       poisson(double lambda);
 bool      storm_occurs(double lambda, double random_value);
 void      raise_ocean_level();
-double    generate_island_size(double alpha, double xmin, double xmax);
-int       geometric_distribution(double p);
-char      random_letter_uniform();
-double    taille_arbre_gamma(double k, double theta, double taille_min, double taille_max);
-bool      binomial(double p);
+// double    generate_island_size(double alpha, double xmin, double xmax);
+double generate_island_size(double alpha, double xm, double xmin, double xmax);
+int    geometric_distribution(double p);
+char   random_letter_uniform();
+double taille_arbre_gamma(double k, double theta, double taille_min, double taille_max);
+bool   binomial(double p);
 
 #endif

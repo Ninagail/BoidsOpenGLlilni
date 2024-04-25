@@ -254,14 +254,14 @@ int main()
 
     Light lightPerson = Light(glm::vec3{0.2});
 
-    // VARIABLE AND TOOLS FOR MATH
+    // VARIABLES ET OUTILS POUR LES MATHS
 
     // POISSON
 
     srand(time(0));
 
     double random_value = (double)rand() / RAND_MAX;
-    double lambda       = 0.6; // lambda = 0.6 --> Tempête = OUI 45.12% du temps
+    double lambda       = 0.6;
     bool   stormHandled = false;
     bool   storm        = storm_occurs(lambda, random_value);
     std::cout << "Tempete : " << (storm ? "Oui" : "Non") << std::endl;
@@ -274,15 +274,16 @@ int main()
     bool      changeColor = laplace_color_probability(mu, b);
 
     // PARETO
-    double    alpha       = 1.25; // plus alpha est grand plus la taille des îles se rapprochera de xmin
+    double    alpha       = 3;
+    double    xm          = 20;
     double    xmin        = 0.1;
     double    xmax        = 0.5;
-    double    island_size = generate_island_size(alpha, xmin, xmax);
+    double    island_size = generate_island_size(alpha, xm, xmin, xmax);
     glm::vec3 island_scale(island_size); // island_size est converti en glm::vec3
 
     // GEOMETRIQUE
 
-    const double q           = 0.25; // q est entre 0 et 1
+    const double q           = 0.25;
     int          num_islands = geometric_distribution(q);
     std::cout << "Nombre d'iles' : " << num_islands << std::endl;
 
@@ -296,7 +297,7 @@ int main()
     };
 
     // UNIFORME
-    //  Vérifier si le bateau pirate est présent avec une loi uniforme
+    //  Vérifier si l'arbre est présent avec une loi uniforme
     char tree_present = random_letter_uniform();
 
     // GAMMA
@@ -309,7 +310,7 @@ int main()
 
     // BINOMIALE
 
-    double p         = 0.7; // Probabilité de succès
+    double p         = 0.7;
     bool   jour_nuit = binomial(p);
 
     // MARKOV
@@ -321,10 +322,10 @@ int main()
     glm::vec3 boatMovingPosition     = glm::vec3(3.0, -4., -8.);
     glm::vec3 boatStationaryPosition = glm::vec3(2., -4., -8.);
 
-    // Définir les états possibles pour le pirate et la barque
+    // Etats possibles pour le pirate et la barque
     std::vector<int> pirateStates = {static_cast<int>(PirateState::Present), static_cast<int>(PirateState::Absent)};
 
-    // Définir la matrice de transition pour la chaîne de Markov
+    // Matrice de transition pour la chaîne de Markov
     std::vector<std::vector<double>> transitionMatrix{
 
         {0.8, 0.2, 0.0, 0.0}, // (P, M) : Pirate présent, Barque en mouvement
@@ -336,12 +337,13 @@ int main()
         {0.0, 0.3, 0.7, 0.0} // (A, I) : Pirate absent, Barque immobile
     };
 
-    // Créer une instance de la classe MarkovChain
+    // Instance de la classe MarkovChain
     MarkovChain markovChain(transitionMatrix, pirateStates);
 
     // État initial : Pirate présent et Barque en mouvement
-    int       currentPirateState = static_cast<int>(PirateState::Present);
-    int       currentBoatState   = static_cast<int>(BoatState::Moving);
+    int currentPirateState = static_cast<int>(PirateState::Present);
+    int currentBoatState   = static_cast<int>(BoatState::Moving);
+
     glm::vec3 piratePosition;
     glm::vec3 barquePosition;
     const int updateFrequency = 20; // Mise à jour de l'état toutes les 10 itérations
@@ -375,11 +377,6 @@ int main()
 
         ShaderSphere.use();
 
-        // if (changeColor)
-        // {
-        //     sphereColor = glm::vec3(1.0f, 0.0f, 0.0f); // Rouge
-        // }
-
         // Passer la couleur au shader
         GLint uColorLocation = glGetUniformLocation(ShaderSphere.getShaderID(), "uColor");
         glUniform3fv(uColorLocation, 1, glm::value_ptr(sphereColor));
@@ -397,7 +394,7 @@ int main()
         glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
         glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 
-        // Dessinez la sphère
+        // Dessinez la sphère selon une loi binomiale et une loi de probabilite de Laplace
         if (jour_nuit)
         {
             if (changeColor)
@@ -406,8 +403,6 @@ int main()
             }
             glDrawArrays(GL_TRIANGLES, 0, vertices.size());
         }
-
-        // glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
         // Libération du VAO
         vao.unbind();
@@ -430,7 +425,7 @@ int main()
 
         ShaderLight.use();
 
-        // Update the scene according to storm
+        // Mettre la scene a jour en fonction de si il y a une tempete
         if (storm)
         {
             raise_ocean_level();
@@ -441,7 +436,6 @@ int main()
         {
             if (j < island_positions.size())
             {
-                // Utiliser la position prédéfinie pour dessiner l'île
                 ile.draw(island_positions[j], island_scale, ProjMatrix, viewMatrix, ShaderLight, textureIle);
             }
         }

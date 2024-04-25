@@ -43,12 +43,12 @@ bool laplace_color_probability(double mu, double b)
 
 // LOI DE PARETO : taille des iles
 
-double generate_island_size(double alpha, double xmin, double xmax)
+double generate_island_size(double alpha, double xm, double xmin, double xmax)
 {
     double u = RAND();
 
     // Appliquer la transformation inverse de Pareto
-    double island_size = xmin * pow(1.0 / u - 1.0, 1.0 / alpha);
+    double island_size = xm * pow(1.0 / u - 1.0, 1.0 / alpha);
 
     // Assurer que la taille de l'île est dans la plage [xmin, xmax]
     island_size = std::max(xmin, std::min(xmax, island_size));
