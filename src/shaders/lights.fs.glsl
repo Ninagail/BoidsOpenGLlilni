@@ -19,10 +19,10 @@ uniform vec3 uLightIntensity;//Ces deux variables servent à passer les informat
 uniform vec3 uLightPos2_vs;
 uniform vec3 uLightIntensity2;//Ces deux variables servent à passer les informations sur la lumière au Shader 
 
-vec3 blinnPhong(vec3 uLightPos_vs, vec3 uLightIntensity){
+vec3 blinnPhong(vec3 uLightPos_vs, vec3 uLightIntensity, float intensityCoefficient){
     float d = distance(vPosition_vs, uLightPos_vs);
     vec3 wi= normalize(uLightPos_vs-vPosition_vs);
-    vec3 Li= (uLightIntensity/(d*d));
+    vec3 Li= (uLightIntensity/(d*d))* intensityCoefficient;
     vec3 w0 = (normalize(-vPosition_vs));
     vec3 N = vNormal_vs;
     vec3 halfVector = (w0+wi)/2.f;
@@ -34,11 +34,11 @@ void main() {
 
   
     // Calcul de la première lumière
-    vec3 light1 = blinnPhong(uLightPos_vs, uLightIntensity);
+    vec3 light1 = blinnPhong(uLightPos_vs, uLightIntensity, 1.0);
     vec3 color = light1;
     
       // Calcul de la deuxième lumière
-    vec3 light2 = blinnPhong(uLightPos2_vs, uLightIntensity2);
+    vec3 light2 = blinnPhong(uLightPos2_vs, uLightIntensity2, 0.5);
     color += light2;
 
     

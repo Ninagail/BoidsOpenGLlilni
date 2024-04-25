@@ -369,8 +369,8 @@ int main()
         MVMatrix     = viewMatrix * MVMatrix;
         NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
-        lightScene.drawLightScene(glm::vec3(0., 4, 2.), ProjMatrix, viewMatrix, ShaderLight);
-        lightPerson.drawLightPerson(personCam.getPosition(), ProjMatrix, viewMatrix, ShaderLight);
+        lightScene.drawLightScene(glm::vec3(0., 5, -4.), ProjMatrix, viewMatrix, ShaderLight);
+        lightPerson.drawLightPerson(camera.getPosition(), ProjMatrix, viewMatrix, ShaderLight);
 
         personCam.drawPerson(personModel, viewMatrix, ProjMatrix, ShaderLight, texturePerson);
 
@@ -425,7 +425,7 @@ int main()
         ImGui::SliderFloat("Distance to escape", &Boids::distance_separation, 0.f, 1.f);
         ImGui::SliderFloat("Distance to align", &Boids::distance_alignment, 0.f, 1.f);
         int intValue = LODS ? 1 : 0;
-        ImGui::SliderInt("Option", &intValue, 0, 1);
+        ImGui::SliderInt("Lods", &intValue, 0, 1);
         LODS = (intValue == 1);
         ImGui::End();
 
