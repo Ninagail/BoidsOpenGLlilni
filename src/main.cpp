@@ -278,8 +278,8 @@ int main()
 
     // GEOMETRIQUE
 
-    const double p           = 0.25; // p est entre 0 et 1
-    int          num_islands = geometric_distribution(p);
+    const double q           = 0.25; // p est entre 0 et 1
+    int          num_islands = geometric_distribution(q);
     std::cout << "Nombre d'iles' : " << num_islands << std::endl;
 
     // Déterminer les positions prédéfinies des îles
@@ -303,6 +303,11 @@ int main()
     double    tree_size  = taille_arbre_gamma(k, theta, taille_min, taille_max);
     glm::vec3 tree_scale(tree_size);
 
+    // BINOMIALE
+
+    double p         = 0.7; // Probabilité de succès
+    bool   jour_nuit = binomial(p);
+
     // MARKOV
 
     glm::vec3 piratePresentPosition = glm::vec3(3.5, -5., -5.0);
@@ -314,7 +319,6 @@ int main()
 
     // Définir les états possibles pour le pirate et la barque
     std::vector<int> pirateStates = {static_cast<int>(PirateState::Present), static_cast<int>(PirateState::Absent)};
-    std::vector<int> boatStates   = {static_cast<int>(BoatState::Moving), static_cast<int>(BoatState::Stationary)};
 
     // Définir la matrice de transition pour la chaîne de Markov
     std::vector<std::vector<double>> transitionMatrix{
@@ -367,10 +371,10 @@ int main()
 
         ShaderSphere.use();
 
-        if (changeColor)
-        {
-            sphereColor = glm::vec3(1.0f, 0.0f, 0.0f); // Rouge
-        }
+        // if (changeColor)
+        // {
+        //     sphereColor = glm::vec3(1.0f, 0.0f, 0.0f); // Rouge
+        // }
 
         // Passer la couleur au shader
         GLint uColorLocation = glGetUniformLocation(ShaderSphere.getShaderID(), "uColor");
@@ -390,7 +394,16 @@ int main()
         glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 
         // Dessinez la sphère
-        glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+        if (jour_nuit)
+        {
+            if (changeColor)
+            {
+                sphereColor = glm::vec3(1.0f, 0.0f, 0.0f); // Rouge
+            }
+            glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+        }
+
+        // glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
         // Libération du VAO
         vao.unbind();
