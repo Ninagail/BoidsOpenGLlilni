@@ -18,6 +18,44 @@ void Boids::drawBoids(p6::Context& ctx) const
     ctx.use_stroke = false;
 }
 
+void Boids::drawBoids3DSphere(const std::vector<glimac::ShapeVertex>& vertices, GLuint textureLadybug, const std::vector<Boids>& boids, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, GLint uMVPMatrix, GLint uMVMatrix, GLint uNormalMatrix, GLint uTextLadybug)
+
+{
+    // Bind texture Ladybug
+    // glBindTexture(GL_TEXTURE_2D, textureLadybug);
+
+    // // Set texture Ladybug
+    // glUniform1i(uTextLadybug, 0);
+
+    // glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glimac::ShapeVertex), vertices.data(), GL_STATIC_DRAW);
+    for (const auto& boid : boids)
+    {
+        // Calculate the model matrix for the boid
+        glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0), boid.get_position());
+        ModelMatrix           = glm::scale(ModelMatrix, glm::vec3(0.1f)); // Scale the boid to appropriate size
+
+        // Calculate the Model-View-Projection matrix for the boid
+        glm::mat4 MVPMatrixBoid = ProjMatrix * MVMatrix * ModelMatrix;
+
+        // Calculate the Normal matrix for the boid
+        glm::mat4 NormalMatrixBoid = glm::transpose(glm::inverse(MVMatrix * ModelMatrix));
+
+        // Apply matrices in the shaders
+        glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(MVPMatrixBoid));
+        glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
+        glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrixBoid));
+
+        // Fill coordinates in the VBO (Static is for constant variables)
+        // glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glimac::ShapeVertex), vertices.data(), GL_STATIC_DRAW);
+
+        // Draw the boid
+        glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+    }
+
+    // Unbind texture and VAO
+    // glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void Boids::drawBoids3D(Model& model, glm::mat4 ProjMatrix, glm::mat4 NormalMatrix, glm::mat4 viewMatrix, LoadShader& loadShader, GLuint textName)
 {
     glm::mat4 MVMatrixBoids = glm::translate(glm::mat4{1.f}, {0.f, 0.f, -3.f});                        // Translation

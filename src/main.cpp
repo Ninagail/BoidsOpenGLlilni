@@ -26,6 +26,7 @@
 
 const int window_width  = 1280;
 const int window_height = 720;
+bool      LODS          = false;
 
 // Fonctions et variables pour les mathematiques
 
@@ -116,6 +117,8 @@ int main()
     trees.loadModel("trees.obj");
     Model pirate = Model();
     pirate.loadModel("pirate.obj");
+    Model cone = Model();
+    cone.loadModel("coneAntenne.obj");
 
     // Initialisation des textures
     GLuint textureLadybug;
@@ -219,6 +222,8 @@ int main()
     trees.setVao();
     pirate.setVbo();
     pirate.setVao();
+    cone.setVbo();
+    cone.setVao();
 
     Cube cube(5.f);
     cube.init(img_cube);
@@ -235,13 +240,13 @@ int main()
 
     // camera
 
-    Person personCam;
-    Camera camera(personCam, personModel);
-    bool   right = false;
-    bool   left  = false;
-    bool   up    = false;
-    bool   down  = false;
-    // glm::vec3 personPosition = personCam.getPosition();
+    Person    personCam;
+    Camera    camera(personCam, personModel);
+    bool      right          = false;
+    bool      left           = false;
+    bool      up             = false;
+    bool      down           = false;
+    glm::vec3 personPosition = personCam.getPosition();
 
     // light
 
@@ -418,7 +423,9 @@ int main()
         ImGui::SliderFloat("Distance to unite", &Boids::distance_cohesion, 0.f, 1.f);
         ImGui::SliderFloat("Distance to escape", &Boids::distance_separation, 0.f, 1.f);
         ImGui::SliderFloat("Distance to align", &Boids::distance_alignment, 0.f, 1.f);
-
+        int intValue = LODS ? 1 : 0;
+        ImGui::SliderInt("Option", &intValue, 0, 1);
+        LODS = (intValue == 1);
         ImGui::End();
 
         ShaderLight.use();
@@ -483,11 +490,23 @@ int main()
         pirate.draw(piratePosition, glm::vec3{0.3}, ProjMatrix, viewMatrix, ShaderLight, pirateTexture);
 
         // Draw boids
-        for (auto& boid : boids)
+        if (LODS == false)
         {
-            boid.drawBoids3D(ladybug, ProjMatrix, NormalMatrix, viewMatrix, ShaderLight, textureLadybug);
-            boid.update_pos();
-            boid.update_direction(boids);
+            for (auto& boid : boids)
+            {
+                boid.drawBoids3D(ladybug, ProjMatrix, NormalMatrix, viewMatrix, ShaderLight, textureLadybug);
+                boid.update_pos();
+                boid.update_direction(boids);
+            }
+        }
+        else
+        {
+            for (auto& boid : boids)
+            {
+                boid.drawBoids3D(cone, ProjMatrix, NormalMatrix, viewMatrix, ShaderLight, textureLadybug);
+                boid.update_pos();
+                boid.update_direction(boids);
+            }
         }
     };
 
@@ -500,6 +519,7 @@ int main()
     ile.~Model();
     trees.~Model();
     pirate.~Model();
+    cone.~Model();
 
     cube.~Cube();
 

@@ -21,6 +21,7 @@ public:
     static float distance_cohesion;
     static float distance_alignment;
     static float distance_separation;
+    //bool         LODS = false;
 
     // constructeurs
     Boids()
@@ -35,6 +36,7 @@ public:
 
     void drawBoids(p6::Context& ctx) const;
     void drawBoids3D(Model& model, glm::mat4 ProjMatrix, glm::mat4 NormalMatrix, glm::mat4 viewMatrix, LoadShader& loadShader, GLuint textName);
+    void drawBoids3DSphere(const std::vector<glimac::ShapeVertex>& vertices, GLuint textureLadybug, const std::vector<Boids>& boids, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, GLint uMVPMatrix, GLint uMVMatrix, GLint uNormalMatrix, GLint uTextLadybug);
 
     void update_pos();
     void update_direction(std::vector<Boids>& boids);

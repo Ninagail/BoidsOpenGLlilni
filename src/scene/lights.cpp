@@ -21,15 +21,19 @@ void Light::drawLightScene(glm::vec3 pos, glm::mat4 projMatrix, glm::mat4 viewMa
     shader.setUniform4fv("uNormalMatrix", NormalMatrix);
 }
 
-void Light::drawLightPerson(glm::vec3 pos, glm::mat4 projMatrix, glm::mat4 viewMatrix, LoadShader& shader)
+void Light::drawLightPerson(glm::vec3 cameraPosition, glm::mat4 projMatrix, glm::mat4 viewMatrix, LoadShader& shader)
 {
-    glm::vec4 LightPos = viewMatrix * glm::vec4(pos, 3.0);
+    // Transformer la position de la lumière dans l'espace de vue de la caméra
+    glm::vec4 LightPos = viewMatrix * glm::vec4(cameraPosition, 1.0);
     shader.setUniform3fv("uLightPos2_vs", glm::vec3(LightPos.x, LightPos.y, LightPos.z));
 
+    // Passer l'intensité de la lumière
     shader.setUniform3fv("uLightIntensity2", this->m_intensity);
 
+    // Calculer la matrice normale
     glm::mat4 NormalMatrix = glm::transpose(glm::inverse(viewMatrix));
 
+    // Passer les matrices au shader
     shader.setUniform4fv("uMVPMatrix", projMatrix * viewMatrix);
     shader.setUniform4fv("uMVMatrix", viewMatrix);
     shader.setUniform4fv("uNormalMatrix", NormalMatrix);
