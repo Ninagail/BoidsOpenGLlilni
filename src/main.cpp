@@ -117,6 +117,8 @@ int main()
     trees.loadModel("trees.obj");
     Model pirate = Model();
     pirate.loadModel("pirate.obj");
+    Model cone = Model();
+    cone.loadModel("coneAntenne.obj");
 
     // Initialisation des textures
     GLuint textureLadybug;
@@ -220,6 +222,8 @@ int main()
     trees.setVao();
     pirate.setVbo();
     pirate.setVao();
+    cone.setVbo();
+    cone.setVao();
 
     Cube cube(5.f);
     cube.init(img_cube);
@@ -498,26 +502,12 @@ int main()
         }
         else
         {
-            ShaderSphere.use();
-
-            vao.bind();
-
-            // Appliquer les transformations
-            // MVMatrix     = glm::translate(glm::mat4(1.0), glm::vec3(2., 1., -5.));
-            // MVMatrix     = glm::rotate(MVMatrix, -ctx.time(), glm::vec3(0, 1, 0));
-            // NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
-
-            // Passez les matrices au shader
-            // glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
-            // glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
-            // glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
             for (auto& boid : boids)
             {
-                boid.drawBoids3DSphere(vertices, textureLadybug, boids, ProjMatrix, MVMatrix, uMVPMatrix, uMVMatrix, uNormalMatrix, textureLadybug);
+                boid.drawBoids3D(cone, ProjMatrix, NormalMatrix, viewMatrix, ShaderLight, textureLadybug);
                 boid.update_pos();
                 boid.update_direction(boids);
             }
-            vao.unbind();
         }
     };
 
@@ -530,6 +520,7 @@ int main()
     ile.~Model();
     trees.~Model();
     pirate.~Model();
+    cone.~Model();
 
     cube.~Cube();
 
