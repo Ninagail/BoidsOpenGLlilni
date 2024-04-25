@@ -117,7 +117,7 @@ int main()
     Model pirate = Model();
     pirate.loadModel("pirate.obj");
 
-    // Initialisation de la texture
+    // Initialisation des textures
     GLuint textureLadybug;
     glGenTextures(1, &textureLadybug);
     glBindTexture(GL_TEXTURE_2D, textureLadybug);
@@ -181,7 +181,7 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    // Sphere
+    // Sphere vertices
 
     VBO vbo;
     vbo.bind();
@@ -204,7 +204,7 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     vao.unbind();
 
-    // Initialisation de la texture
+    // Set VBO VAO
     ladybug.setVbo();
     ladybug.setVao();
     personModel.setVbo();
