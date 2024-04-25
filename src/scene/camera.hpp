@@ -18,6 +18,13 @@ public:
     Camera(Person& target, Model& model, float distance = 3.0f, float pitch = 50.0f, float yaw = 20.0f)
         : m_target(target), m_model(model), m_distance(0.1f), m_height(-.5f), m_Pitch(pitch), m_Yaw(yaw) {}
 
+    glm::vec3 getPosition() const
+    {
+        // Calculer et renvoyer la position de la caméra en fonction de ses autres paramètres
+        // Par exemple, vous pouvez simplement retourner la position cible du personnage
+        return m_target.getPosition();
+    }
+
     // Fonction pour mettre à jour la vue de la caméra en fonction de la position et de l'orientation du personnage
     void getViewMatrix(glm::mat4& ViewMatrix)
     {
